@@ -29,6 +29,12 @@ public class ChessPiece {
         PAWN
     }
 
+    public boolean equals(ChessPiece other) {
+//        System.out.println(this.getTeamColor() == other.getTeamColor());
+//        System.out.println(this.getPieceType() == other.getPieceType());
+        return (this.getTeamColor() == other.getTeamColor() && this.getPieceType() == other.getPieceType());
+    }
+
     /**
      * @return Which team this chess piece belongs to
      */

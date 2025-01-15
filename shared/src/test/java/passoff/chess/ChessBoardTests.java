@@ -36,6 +36,10 @@ public class ChessBoardTests {
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
 
+//        System.out.println(actualBoard);
+//        System.out.println(expectedBoard);
+        System.out.println(expectedBoard.equals(actualBoard));
+
         Assertions.assertEquals(expectedBoard, actualBoard);
     }
 
