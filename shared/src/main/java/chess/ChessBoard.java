@@ -12,23 +12,25 @@ public class ChessBoard {
         //this.resetBoard();
     }
 
-    public ChessPiece[][] chessBoardPieces = new ChessPiece[9][9];
-
-    public boolean equals(ChessBoard other) {
-//        System.out.println("here");
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-//                System.out.println(i);
-//                System.out.println(j);
-                if(!(this.getPiece(new ChessPosition(i, j)) == null && other.getPiece(new ChessPosition(i, j)) == null)) {
-                    if (!this.getPiece(new ChessPosition(i, j)).equals(other.getPiece(new ChessPosition(i, j)))) {
-                        return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ChessBoard other) {
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    if(!(this.getPiece(new ChessPosition(i, j)) == null && other.getPiece(new ChessPosition(i, j)) == null)) {
+                        if (!this.getPiece(new ChessPosition(i, j)).equals(other.getPiece(new ChessPosition(i, j)))) {
+                            return false;
+                        }
                     }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
+
+    public ChessPiece[][] chessBoardPieces = new ChessPiece[9][9];
+
 
     /**
      * Adds a chess piece to the chessboard

@@ -17,6 +17,15 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor = ChessGame.TeamColor.WHITE;
     private ChessPiece.PieceType pieceType = ChessPiece.PieceType.PAWN;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ChessPiece other) {
+            return (this.getTeamColor() == other.getTeamColor() && this.getPieceType() == other.getPieceType());
+        }
+        return false;
+    }
+
     /**
      * The various different chess piece options
      */
@@ -27,12 +36,6 @@ public class ChessPiece {
         KNIGHT,
         ROOK,
         PAWN
-    }
-
-    public boolean equals(ChessPiece other) {
-//        System.out.println(this.getTeamColor() == other.getTeamColor());
-//        System.out.println(this.getPieceType() == other.getPieceType());
-        return (this.getTeamColor() == other.getTeamColor() && this.getPieceType() == other.getPieceType());
     }
 
     /**
