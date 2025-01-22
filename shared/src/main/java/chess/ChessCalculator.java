@@ -22,7 +22,7 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && board.getPiece(move.getEndPosition()) == null && move.getStartPosition() != move.getEndPosition()) {
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
                 return Math.abs(startRow - endRow) < 1 && Math.abs(startColumn - endColumn) < 1;
             }
         }
@@ -35,7 +35,7 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && board.getPiece(move.getEndPosition()) == null && move.getStartPosition() != move.getEndPosition()) {
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
                 return startRow == endRow || startColumn == endColumn;
             }
         }
@@ -48,7 +48,7 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && board.getPiece(move.getEndPosition()) == null && move.getStartPosition() != move.getEndPosition()) {
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
                 return Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn);
             }
         }
@@ -61,7 +61,7 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && board.getPiece(move.getEndPosition()) == null && move.getStartPosition() != move.getEndPosition()) {
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
                 return Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn) || startRow == endRow || startColumn == endColumn;
             }
         }
@@ -74,12 +74,27 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && board.getPiece(move.getEndPosition()) == null && move.getStartPosition() != move.getEndPosition()) {
-                return Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn) || startRow == endRow || startColumn == endColumn;
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
+                return Math.abs(startRow - endRow) == 2 && Math.abs(startColumn - endColumn) == 1 || Math.abs(startRow - endRow) == 1 && Math.abs(startColumn - endColumn) == 2;
             }
         }
         return false;
     }
 
-
+    public boolean calculatePawn(ChessMove move) {
+        if(piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            int startRow = move.getStartPosition().getRow();
+            int startColumn = move.getStartPosition().getColumn();
+            int endRow = move.getEndPosition().getRow();
+            int endColumn = move.getEndPosition().getColumn();
+            if(board.getPiece(move.getStartPosition()) == piece && move.getStartPosition() != move.getEndPosition()) {
+                if(board.getPiece(move.getEndPosition()) == null) {
+                    return startRow == endRow && startColumn == endColumn+(piece.getTeamColor() == ChessGame.TeamColor.BLACK ? -1 : 1);
+                } else if(board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) {
+                    return Math.abs(startRow-endRow) == 1 && startColumn == +(piece.getTeamColor() == ChessGame.TeamColor.BLACK ? -1 : 1);
+                }
+            }
+        }
+        return false;
+    }
 }
