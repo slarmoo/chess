@@ -50,4 +50,9 @@ public class ChessMove {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return startPosition + " " + endPosition;
+    }
 }
