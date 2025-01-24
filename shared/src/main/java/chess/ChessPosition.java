@@ -32,6 +32,11 @@ public class ChessPosition {
     }
 
     @Override
+    public int hashCode() {
+        return row + 8*col;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(obj instanceof ChessPosition other) {
             return row == other.row && col == other.col;

@@ -44,9 +44,14 @@ public class ChessMove {
     }
 
     @Override
+    public int hashCode() {
+        return startPosition.hashCode() + endPosition.hashCode()*64 + (promotionPiece==null?0:promotionPiece.hashCode())*64*64;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(obj instanceof ChessMove other) {
-            return startPosition.equals(other.startPosition) && endPosition.equals(other.endPosition);
+            return startPosition.equals(other.startPosition) && endPosition.equals(other.endPosition) && promotionPiece == other.promotionPiece;
         }
         return false;
     }

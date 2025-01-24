@@ -86,7 +86,7 @@ public class ChessCalculator {
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
             if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) && move.getStartPosition() != move.getEndPosition()) {
-                return Math.abs(startRow - endRow) < 1 && Math.abs(startColumn - endColumn) < 1;
+                return Math.abs(startRow - endRow) <= 1 && Math.abs(startColumn - endColumn) <= 1;
             }
         }
         return false;
