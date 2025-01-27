@@ -123,41 +123,34 @@ public class ChessCalculator {
             int startColumn = move.getStartPosition().getColumn();
             int endRow = move.getEndPosition().getRow();
             int endColumn = move.getEndPosition().getColumn();
-            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null ||
-            board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) &&
-            move.getStartPosition() != move.getEndPosition()) {
-                boolean blockedNW = false;
-                boolean blockedSW = false;
-                boolean blockedNE = false;
-                boolean blockedSE = false;
-                for(int i = 1; i < 9; i++) {
-                    for(int j = 1; j < 9; j++) {
-                        if(board.getPiece(new ChessPosition(i, j)) != null && Math.abs(startRow - i) == Math.abs(startColumn - j)) {
-                            if(((startRow < i && i < endRow) && (startColumn > j && j > endColumn))) {
-                                blockedNE = true;
-                            } else if(((startRow > i && i > endRow) && (startColumn > j && j > endColumn))) {
-                                blockedNW = true;
-                            } else if(((startRow < i && i < endRow) && (startColumn < j && j < endColumn))) {
-                                blockedSE = true;
-                            } else if(((startRow > i && i > endRow) && (startColumn < j && j < endColumn))) {
-                                blockedSW = true;
-                            }
-                        }
+            boolean blockedNW = false;
+            boolean blockedSW = false;
+            boolean blockedNE = false;
+            boolean blockedSE = false;
+            for(int i = 1; i < 9; i++) {
+                for(int j = 1; j < 9; j++) {
+                    if(board.getPiece(new ChessPosition(i, j)) != null && Math.abs(startRow - i) == Math.abs(startColumn - j)) {
+                        blockedNE = (startRow < i && i < endRow) && (startColumn > j && j > endColumn);
+                        blockedNW = (startRow > i && i > endRow) && (startColumn > j && j > endColumn);
+                        blockedSE = (startRow < i && i < endRow) && (startColumn < j && j < endColumn);
+                        blockedSW = (startRow > i && i > endRow) && (startColumn < j && j < endColumn);
                     }
                 }
-                if(Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn)) {
-                    if (startRow > endRow) {
-                        if (startColumn > endColumn) {
-                            return !blockedNW;
-                        } else {
-                            return !blockedSW;
-                        }
+            }
+            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null ||
+            board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) &&
+            move.getStartPosition() != move.getEndPosition() && (Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn))){
+                if (startRow > endRow) {
+                    if (startColumn > endColumn) {
+                        return !blockedNW;
                     } else {
-                        if (startColumn > endColumn) {
-                            return !blockedNE;
-                        } else {
-                            return !blockedSE;
-                        }
+                        return !blockedSW;
+                    }
+                } else {
+                    if (startColumn > endColumn) {
+                        return !blockedNE;
+                    } else {
+                        return !blockedSE;
                     }
                 }
             }
@@ -181,7 +174,8 @@ public class ChessCalculator {
             if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null ||
             board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) &&
             move.getStartPosition() != move.getEndPosition()) {
-                return Math.abs(startRow - endRow) == 2 && Math.abs(startColumn - endColumn) == 1 || Math.abs(startRow - endRow) == 1 && Math.abs(startColumn - endColumn) == 2;
+                return Math.abs(startRow - endRow) == 2 && Math.abs(startColumn - endColumn) == 1
+                    || Math.abs(startRow - endRow) == 1 && Math.abs(startColumn - endColumn) == 2;
             }
         }
         return false;

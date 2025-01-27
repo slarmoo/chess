@@ -17,10 +17,9 @@ public class ChessBoard {
         if (obj instanceof ChessBoard other) {
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
-                    if(!(this.getPiece(new ChessPosition(i, j)) == null && other.getPiece(new ChessPosition(i, j)) == null)) {
-                        if (!this.getPiece(new ChessPosition(i, j)).equals(other.getPiece(new ChessPosition(i, j)))) {
-                            return false;
-                        }
+                    if(!(this.getPiece(new ChessPosition(i, j)) == null && other.getPiece(new ChessPosition(i, j)) == null)
+                    && !this.getPiece(new ChessPosition(i, j)).equals(other.getPiece(new ChessPosition(i, j)))) {
+                        return false;
                     }
                 }
             }
