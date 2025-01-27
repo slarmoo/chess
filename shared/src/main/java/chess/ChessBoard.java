@@ -63,7 +63,7 @@ public class ChessBoard {
                 chessBoardPieces[i][j] = null;
             }
         }
-        ChessPiece[] PieceOrderBlack = {
+        ChessPiece[] pieceOrderBlack = {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN),
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK),
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT),
@@ -73,7 +73,7 @@ public class ChessBoard {
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP),
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT),
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK)};
-        ChessPiece[] PieceOrderWhite = {
+        ChessPiece[] pieceOrderWhite = {
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN),
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK),
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT),
@@ -83,11 +83,11 @@ public class ChessBoard {
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP),
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT),
                 new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK)};
-        for (int i = 1; i < PieceOrderBlack.length; i++) {
-            addPiece(new ChessPosition(8,i), PieceOrderBlack[i]);
-            addPiece(new ChessPosition(7,i), PieceOrderBlack[0]);
-            addPiece(new ChessPosition(1,i), PieceOrderWhite[i]);
-            addPiece(new ChessPosition(2,i), PieceOrderWhite[0]);
+        for (int i = 1; i < pieceOrderBlack.length; i++) {
+            addPiece(new ChessPosition(8,i), pieceOrderBlack[i]);
+            addPiece(new ChessPosition(7,i), pieceOrderBlack[0]);
+            addPiece(new ChessPosition(1,i), pieceOrderWhite[i]);
+            addPiece(new ChessPosition(2,i), pieceOrderWhite[0]);
         }
     }
 }
