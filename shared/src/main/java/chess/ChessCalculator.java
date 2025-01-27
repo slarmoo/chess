@@ -27,6 +27,21 @@ public class ChessCalculator {
             ChessPiece.PieceType.ROOK,
     };
 
+    private Collection<ChessMove> pawnPromotionCalculator(ChessMove move) {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ArrayList<ChessMove> moveSet = new ArrayList<>();
+        if(end.getRow() == (piece.getTeamColor() == ChessGame.TeamColor.BLACK ? 1 : 8)) {
+            for (ChessPiece.PieceType promotionType : promotionTypes) {
+                ChessMove pawnMove = new ChessMove(start, end, promotionType);
+                moveSet.add(pawnMove);
+            }
+        } else {
+            moveSet.add(move);
+        }
+        return moveSet;
+    }
+
     public Collection<ChessMove> calculateMoveSetForPiece() {
         if(piece == null) {return null;}
         ArrayList<ChessMove> moveSet = new ArrayList<>();
@@ -36,14 +51,7 @@ public class ChessCalculator {
                 switch (piece.getPieceType()) {
                     case PAWN:
                         if(calculatePawn(move)) {
-                            if(i == (piece.getTeamColor() == ChessGame.TeamColor.BLACK ? 1 : 8)) {
-                                for (ChessPiece.PieceType promotionType : promotionTypes) {
-                                    move = new ChessMove(position, new ChessPosition(i, j), promotionType);
-                                    moveSet.add(move);
-                                }
-                            } else {
-                                moveSet.add(move);
-                            }
+                            moveSet.addAll(pawnPromotionCalculator(move));
                         }
                         break;
                     case KING:
