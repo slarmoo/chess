@@ -1,6 +1,7 @@
 package chess;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -66,20 +67,20 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        Collection<ChessMove> moveSet = validMoves(move.getStartPosition());
-        boolean validMove = false;
-        while(moveSet.iterator().hasNext()) {
-            ChessMove nextMove = moveSet.iterator().next();
-            if(move.equals(nextMove)) {
-                validMove = true;
-            }
-        }
-        if(!validMove) {
-            throw new InvalidMoveException();
-        } else {
+//        Collection<ChessMove> moveSet = validMoves(move.getStartPosition());
+//        boolean validMove = false;
+//        while(moveSet.iterator().hasNext()) {
+//            ChessMove nextMove = moveSet.iterator().next();
+//            if(move.equals(nextMove)) {
+//                validMove = true;
+//            }
+//        }
+//        if(!validMove) {
+//            throw new InvalidMoveException();
+//        } else {
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
             board.addPiece(move.getStartPosition(), null);
-        }
+//        }
     }
 
     /**
@@ -110,7 +111,21 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moveSet = getAllValidMoves(teamColor);
+        return moveSet.isEmpty();
+    }
+
+    private Collection<ChessMove> getAllValidMoves(TeamColor teamColor) {
+        var moveSet = new ArrayList<ChessMove>();
+        for(int i = 1; i <= 8; i++) {
+            for(int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if(piece != null && piece.getTeamColor() == teamColor) {
+                    moveSet.addAll(validMoves(new ChessPosition(i, j)));
+                }
+            }
+        }
+        return moveSet;
     }
 
     /**
