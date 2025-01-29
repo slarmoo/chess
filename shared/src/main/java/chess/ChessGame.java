@@ -100,7 +100,33 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        Collection<ChessMove> opponentMoveSet = getAllValidMoves(opponentColor);
+        ChessPosition kingPosition = findKingPosition(teamColor);
+        Collection<ChessMove> kingMoveSet = validMoves(kingPosition);
+        if(kingMoveSet == null) {
+            return false;
+        }
+        boolean isInCheck = false;
+        boolean isMoveInCheck = true;
+        while(kingMoveSet.iterator().hasNext() && isMoveInCheck) {
+            isMoveInCheck = false;
+            ChessMove nextMove = kingMoveSet.iterator().next();
+            ChessPosition nextPosition = nextMove.getEndPosition();
+            Collection<ChessMove> opponentMoveSetThrowaway = new ArrayList<>(opponentMoveSet);
+            while(opponentMoveSetThrowaway.iterator().hasNext()) {
+                ChessMove opponentMove = kingMoveSet.iterator().next();
+                ChessPosition opponentPosition = nextMove.getEndPosition();
+                if(opponentPosition.equals(kingPosition)) {
+                    isInCheck = true;
+                }
+                if(opponentPosition.equals(nextPosition)) {
+                    isMoveInCheck = true;
+                    break;
+                }
+            }
+        }
+        return isInCheck && isMoveInCheck;
     }
 
     /**
@@ -126,6 +152,19 @@ public class ChessGame {
             }
         }
         return moveSet;
+    }
+
+    private  ChessPosition findKingPosition(TeamColor teamColor) {
+        for(int i = 1; i <= 8; i++) {
+            for(int j = 1; j <= 8; j++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return new ChessPosition(i, j);
+                }
+            }
+        }
+        //There should always be a king on board
+        return null;
     }
 
     /**
