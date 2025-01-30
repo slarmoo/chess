@@ -13,8 +13,8 @@ public class ChessPosition {
         this.col = col;
     }
 
-    private int row = 1;
-    private int col = 1;
+    private final int row;
+    private final int col;
     /**
      * @return which row this position is in
      * 1 codes for the bottom row

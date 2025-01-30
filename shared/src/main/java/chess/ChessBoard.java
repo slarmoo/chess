@@ -92,13 +92,13 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                str += chessBoardPieces[i][j] == null ? "0 " : chessBoardPieces[i][j].toString() + " ";
+                str.append(chessBoardPieces[i][j] == null ? "0 " : chessBoardPieces[i][j].toString() + " ");
             }
-            str += "\n";
+            str.append("\n");
         }
-        return str;
+        return str.toString();
     }
 }

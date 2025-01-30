@@ -15,9 +15,9 @@ public class ChessMove {
         this.promotionPiece = promotionPiece;
     }
 
-    private ChessPosition startPosition;
-    private ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPiece = null;
+    private final ChessPosition startPosition;
+    private final ChessPosition endPosition;
+    private final ChessPiece.PieceType promotionPiece;
 
     /**
      * @return ChessPosition of starting location

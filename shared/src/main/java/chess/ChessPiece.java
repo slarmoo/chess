@@ -16,8 +16,8 @@ public class ChessPiece {
         this.pieceType = type;
     }
 
-    private ChessGame.TeamColor pieceColor = ChessGame.TeamColor.WHITE;
-    private ChessPiece.PieceType pieceType = ChessPiece.PieceType.PAWN;
+    private final ChessGame.TeamColor pieceColor;
+    private final ChessPiece.PieceType pieceType;
 
     @Override
     public boolean equals(Object obj) {
