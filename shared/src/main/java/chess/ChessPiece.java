@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Represents a single chess piece
@@ -24,6 +25,40 @@ public class ChessPiece {
             return (this.getTeamColor() == other.getTeamColor() && this.getPieceType() == other.getPieceType());
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+
+        String s = switch(pieceType) {
+            case KING: {
+                yield "k";
+            }
+            case QUEEN: {
+                yield "q";
+            }
+            case BISHOP: {
+                yield "b";
+            }
+            case KNIGHT: {
+                yield "n";
+            }
+            case ROOK: {
+                yield "r";
+            }
+            case PAWN: {
+                yield "p";
+            }
+        };
+        s = switch (pieceColor) {
+            case WHITE: {
+                yield s.toUpperCase(Locale.ROOT);
+            }
+            case BLACK: {
+                yield s.toLowerCase(Locale.ROOT);
+            }
+        };
+        return s;
     }
 
     /**

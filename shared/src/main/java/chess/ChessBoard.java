@@ -57,8 +57,8 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
                 chessBoardPieces[i][j] = null;
             }
         }
@@ -88,5 +88,17 @@ public class ChessBoard {
             addPiece(new ChessPosition(1,i), pieceOrderWhite[i]);
             addPiece(new ChessPosition(2,i), pieceOrderWhite[0]);
         }
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                str += chessBoardPieces[i][j] == null ? "0 " : chessBoardPieces[i][j].toString() + " ";
+            }
+            str += "\n";
+        }
+        return str;
     }
 }
