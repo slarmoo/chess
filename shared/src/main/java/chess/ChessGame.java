@@ -145,7 +145,27 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessMove> moveSet = getAllValidMoves(teamColor);
-        return moveSet.isEmpty();
+        if(moveSet.isEmpty()) return true;
+        TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        Collection<ChessMove> opponentMoveSet = getAllValidMoves(opponentColor);
+        ChessPosition kingPosition = findKingPosition(teamColor);
+        Collection<ChessMove> kingMoveSet = validMoves(kingPosition);
+        if(isInCheck(teamColor)) { //must be in check to be in checkmate
+            return false;
+        }
+        for(ChessMove kingMove : kingMoveSet) {
+            boolean moveLeadsToCheck = false;
+            for(ChessMove opponentMove : opponentMoveSet) {
+                if(opponentMove.getEndPosition().equals(kingMove.getEndPosition())) {
+                    moveLeadsToCheck = true;
+                    break;
+                }
+            }
+            if(!moveLeadsToCheck) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Collection<ChessMove> getAllValidMoves(TeamColor teamColor) {
