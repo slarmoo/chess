@@ -12,6 +12,15 @@ public class ChessBoard {
         //this.resetBoard();
     }
 
+    public void copyBoard(ChessBoard other) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                ChessPosition pos = new ChessPosition(i, j);
+                this.addPiece(pos, other.getPiece(pos));
+            }
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ChessBoard other) {

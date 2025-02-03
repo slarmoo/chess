@@ -33,11 +33,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (team == TeamColor.WHITE) {
-            this.teamColor = TeamColor.BLACK;
-        } else {
-            this.teamColor = TeamColor.WHITE;
-        }
+        this.teamColor = team;
     }
 
     /**
@@ -69,8 +65,19 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> moveSet = validMoves(move.getStartPosition());
         boolean validMove = false;
+        if(moveSet == null || this.board.getPiece(move.getStartPosition()).getTeamColor() != this.getTeamTurn()) {
+            throw new InvalidMoveException();
+        }
         for(ChessMove nextMove : moveSet) {
-            if (move.equals(nextMove)) {
+            //make future game step
+            ChessGame futureGame = new ChessGame();
+            ChessBoard futureBoard = new ChessBoard();
+            futureBoard.copyBoard(this.board);
+            futureGame.setBoard(futureBoard);
+            //do move
+            futureGame.makeMoveUnhandled(move);
+            //is still in check?
+            if (move.equals(nextMove) && !futureGame.isInCheck(teamColor)) {
                 validMove = true;
                 break;
             }
@@ -80,8 +87,13 @@ public class ChessGame {
         } else {
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
             board.addPiece(move.getStartPosition(), null);
-            setTeamTurn(this.teamColor);
+            setTeamTurn((this.teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE);
         }
+    }
+
+    public void makeMoveUnhandled(ChessMove move) {
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -110,30 +122,45 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
-        Collection<ChessMove> opponentMoveSet = getAllValidMoves(opponentColor);
-        ChessPosition kingPosition = findKingPosition(teamColor);
-        Collection<ChessMove> kingMoveSet = validMoves(kingPosition);
+//        TeamColor opponentColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+//        Collection<ChessMove> opponentMoveSet = getAllValidMoves(opponentColor);
+//        ChessPosition kingPosition = findKingPosition(teamColor);
+//        Collection<ChessMove> kingMoveSet = validMoves(kingPosition);
         if(!isInCheck(teamColor)) { //must be in check to be in checkmate
             return false;
         }
-        if(kingMoveSet == null) { //if in check and king cannot move must be in checkmate
-            //TODO: unless you can capture piece that is causing king to be in check
-            return true;
-        }
-        for(ChessMove kingMove : kingMoveSet) {
-            boolean moveLeadsToCheck = false;
-            for(ChessMove opponentMove : opponentMoveSet) {
-                if(opponentMove.getEndPosition().equals(kingMove.getEndPosition())) {
-                    moveLeadsToCheck = true;
-                    break;
-                }
-            }
-            if(!moveLeadsToCheck) {
-                return true;
+        Collection<ChessMove> selfMoveSet = getAllValidMoves(teamColor);
+        for(ChessMove move : selfMoveSet) {
+            //make future game step
+            ChessGame futureGame = new ChessGame();
+            ChessBoard futureBoard = new ChessBoard();
+            futureBoard.copyBoard(this.board);
+            futureGame.setBoard(futureBoard);
+            //do move
+            futureGame.makeMoveUnhandled(move);
+            //is still in check?
+            if(!futureGame.isInCheck(teamColor)) {
+                return false;
             }
         }
-        return false;
+        return true;
+//        if(kingMoveSet == null) { //if in check and king cannot move must be in checkmate
+//            //TODO: unless you can capture piece that is causing king to be in check / move in the way
+//            return true;
+//        } //else if()
+//        for(ChessMove kingMove : kingMoveSet) {
+//            boolean moveLeadsToCheck = false;
+//            for(ChessMove opponentMove : opponentMoveSet) {
+//                if(opponentMove.getEndPosition().equals(kingMove.getEndPosition())) {
+//                    moveLeadsToCheck = true;
+//                    break;
+//                }
+//            }
+//            if(!moveLeadsToCheck) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     /**
