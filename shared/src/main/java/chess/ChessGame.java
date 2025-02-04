@@ -153,7 +153,9 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessMove> moveSet = getAllValidMoves(teamColor);
-        if(moveSet.isEmpty()) return true;
+        if(moveSet.isEmpty()) {
+            return true;
+        }
         if(isInCheck(teamColor)) { //must not be in check to be in stalemate
             return false;
         }

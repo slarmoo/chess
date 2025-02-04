@@ -138,18 +138,14 @@ public class ChessCalculator {
             for(int col = 1; col <= 8; col++) {
                 ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col));
                 if(otherPiece != null && Math.abs(startRow - row) == Math.abs(startColumn - col)) {
-                    if(startRow < row && row < endRow) {
-                        if(startColumn < col && col < endColumn) {
-                            blockedNW = true;
-                        } else if(startColumn > col && col > endColumn) {
-                            blockedNE = true;
-                        }
-                    } else if(startRow > row && row > endRow) {
-                        if(startColumn < col && col < endColumn) {
-                            blockedSW = true;
-                        } else if(startColumn > col && col > endColumn) {
-                            blockedSE = true;
-                        }
+                    if(startRow < row && row < endRow && startColumn < col && col < endColumn) {
+                        blockedNW = true;
+                    } else if(startRow > row && row > endRow && startColumn < col && col < endColumn) {
+                        blockedSW = true;
+                    } else if(startRow < row && row < endRow && startColumn > col && col > endColumn) {
+                        blockedNE = true;
+                    } else if(startRow > row && row > endRow && startColumn > col && col > endColumn) {
+                        blockedSE = true;
                     }
                 }
             }
