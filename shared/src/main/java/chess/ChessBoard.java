@@ -102,9 +102,10 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                str.append(chessBoardPieces[i][j] == null ? "0 " : chessBoardPieces[i][j].toString() + " ");
+        for (int i = 8; i > 0; i--) {
+            str.append("|");
+            for (int j = 1; j < 9; j++) {
+                str.append(chessBoardPieces[i][j] == null ? " |" : chessBoardPieces[i][j].toString() + "|");
             }
             str.append("\n");
         }

@@ -125,41 +125,46 @@ public class ChessCalculator {
         return false;
     }
 
-    public boolean calculateBishop(ChessMove move) {
-        if(piece.getPieceType() == ChessPiece.PieceType.BISHOP || piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-            int startRow = move.getStartPosition().getRow();
-            int startColumn = move.getStartPosition().getColumn();
-            int endRow = move.getEndPosition().getRow();
-            int endColumn = move.getEndPosition().getColumn();
-            boolean blockedNW = false;
-            boolean blockedSW = false;
-            boolean blockedNE = false;
-            boolean blockedSE = false;
-            for(int i = 1; i < 9; i++) {
-                for(int j = 1; j < 9; j++) {
-                    if(board.getPiece(new ChessPosition(i, j)) != null && Math.abs(startRow - i) == Math.abs(startColumn - j)) {
-                        blockedNE = (startRow < i && i < endRow) && (startColumn > j && j > endColumn);
-                        blockedNW = (startRow > i && i > endRow) && (startColumn > j && j > endColumn);
-                        blockedSE = (startRow < i && i < endRow) && (startColumn < j && j < endColumn);
-                        blockedSW = (startRow > i && i > endRow) && (startColumn < j && j < endColumn);
+    private boolean calculateBishop(ChessMove move)  {
+        int startRow = move.getStartPosition().getRow();
+        int startColumn = move.getStartPosition().getColumn();
+        int endRow = move.getEndPosition().getRow();
+        int endColumn = move.getEndPosition().getColumn();
+        boolean blockedNW = false;
+        boolean blockedNE = false;
+        boolean blockedSW = false;
+        boolean blockedSE = false;
+        for(int row = 1; row <= 8; row++) {
+            for(int col = 1; col <= 8; col++) {
+                ChessPiece otherPiece = board.getPiece(new ChessPosition(row, col));
+                if(otherPiece != null && Math.abs(startRow - row) == Math.abs(startColumn - col)) {
+                    if(startRow < row && row < endRow) {
+                        if(startColumn < col && col < endColumn) {
+                            blockedNW = true;
+                        } else if(startColumn > col && col > endColumn) {
+                            blockedNE = true;
+                        }
+                    } else if(startRow > row && row > endRow) {
+                        if(startColumn < col && col < endColumn) {
+                            blockedSW = true;
+                        } else if(startColumn > col && col > endColumn) {
+                            blockedSE = true;
+                        }
                     }
                 }
             }
-            if(board.getPiece(move.getStartPosition()) == piece && (board.getPiece(move.getEndPosition()) == null ||
-            board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor()) &&
-            move.getStartPosition() != move.getEndPosition() && (Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn))){
-                if (startRow > endRow) {
-                    if (startColumn > endColumn) {
-                        return !blockedNW;
-                    } else {
-                        return !blockedSW;
-                    }
-                } else {
-                    if (startColumn > endColumn) {
-                        return !blockedNE;
-                    } else {
-                        return !blockedSE;
-                    }
+        }
+        if(!move.getStartPosition().equals(move.getEndPosition()) && (board.getPiece(move.getEndPosition()) == null
+                || board.getPiece(move.getEndPosition()).getTeamColor() != piece.getTeamColor())) {
+            if(Math.abs(startRow - endRow) == Math.abs(startColumn - endColumn)) {
+                if(startRow < endRow && startColumn < endColumn && !blockedNW) {
+                    return true;
+                } else if (startRow < endRow && startColumn > endColumn && !blockedNE) {
+                    return true;
+                } else if (startRow > endRow && startColumn < endColumn && !blockedSW) {
+                    return true;
+                } else if (startRow > endRow && startColumn > endColumn && !blockedSE) {
+                    return true;
                 }
             }
         }
