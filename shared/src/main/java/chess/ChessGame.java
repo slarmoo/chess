@@ -58,6 +58,7 @@ public class ChessGame {
         if(moveSet == null) {
             return null;
         }
+        TeamColor color = this.board.getPiece(startPosition).getTeamColor();
         for(ChessMove nextMove : moveSet) {
             //make future game step
             ChessGame futureGame = new ChessGame();
@@ -67,7 +68,7 @@ public class ChessGame {
             //do move
             futureGame.makeMoveUnhandled(nextMove);
             //puts king in check?
-            if (!futureGame.isInCheck(teamColor)) {
+            if (!futureGame.isInCheck(color)) {
                 filteredMoveSet.add(nextMove);
             }
         }
