@@ -40,6 +40,17 @@ public class Database {
         return false;
     }
 
+    public Auth findAuth(Auth auth) {
+        for(Auth a : authCollection) {
+            if(a.equals(auth)) {
+//                System.out.println("database: " + u);
+                return a;
+            }
+        }
+//        System.out.println("database: " + userCollection + " " + user);
+        return null;
+    }
+
     public void deleteGames() {
         gameCollection.clear();
     }

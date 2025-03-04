@@ -30,13 +30,12 @@ public class Server {
 
         Spark.delete("/db", this::deleteAll);
 
-        Spark.post("/game", (request, response) -> {
-            var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
-            var game = new Gson().fromJson(request.body(), Game.class);
-            game = service.createGame(auth, game.gameName());
-            response.body(new Gson().toJson(game));
-            return 200;
-        });
+        Spark.post("/game", this::createGame);
+
+        Spark.post("/session", this::loginUser);
+
+        Spark.delete("/session", this::logoutUser);
+
         Spark.exception(exception.ResponseException.class, this::exceptionHandler);
 
 
@@ -74,11 +73,38 @@ public class Server {
         } catch (DataAccessException e) {
             throw new exception.ResponseException(403, e.getMessage());
         }
-//            System.out.println(e);
-//            response.body(new Gson().toJson(e.toString()));
-//            response.status(403);
-//            return e.toString();
-//        }
+        return "";
+    }
+
+    private Object createGame(Request request, Response response) throws exception.ResponseException {
+        var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
+        var game = new Gson().fromJson(request.body(), Game.class);
+        try {
+            game = service.createGame(auth, game.gameName());
+            response.body(new Gson().toJson(game));
+            response.status(200);
+        } catch (DataAccessException e) {
+            throw new exception.ResponseException(403, e.getMessage());
+        }
+        return "";
+    }
+
+    public Object loginUser(Request request, Response response) throws exception.ResponseException {
+        var user = new Gson().fromJson(request.headers().toString(), User.class);
+        try {
+            var auth = service.login(user);
+            response.body(new Gson().toJson(auth));
+            response.status(200);
+        } catch (DataAccessException e) {
+            throw new exception.ResponseException(403, e.getMessage());
+        }
+        return "";
+    }
+
+    public Object logoutUser(Request request, Response response) throws exception.ResponseException {
+        var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
+        service.logout(auth);
+        response.status(200);
         return "";
     }
 }

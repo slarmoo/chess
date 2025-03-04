@@ -16,11 +16,24 @@ public class Service {
 
     public Auth addUser(User user) throws DataAccessException {
         User u = userdao.getUser(user);
-//        if(u == null) {
+        if(u == null) {
             return userdao.addUser(user);
-//        } else {
-//            throw new DataAccessException("User already exists");
-//        }
+        } else {
+            throw new DataAccessException("User already exists");
+        }
+    }
+
+    public Auth login(User user) throws DataAccessException {
+        User u = userdao.getUser(user);
+        if(u != null) {
+            return userdao.createAuth(user);
+        } else {
+            throw new DataAccessException("User already exists");
+        }
+    }
+
+    public void logout(Auth auth) {
+        userdao.deleteAuth(auth);
     }
 
     public void delete() {

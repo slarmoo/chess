@@ -21,7 +21,7 @@ public class MemoryUserDAO implements UserDAO {
         }
     }
 
-    private Auth createAuth(User user) {
+    public Auth createAuth(User user) {
         return new Auth(user.username(), user.hashCode() + "");
     }
 
@@ -34,5 +34,14 @@ public class MemoryUserDAO implements UserDAO {
 //            System.out.println("userdao getUser: none");
             return null;
         }
+    }
+
+    @Override
+    public void deleteAuth(Auth auth) {
+    }
+
+    @Override
+    public boolean validateAuth(Auth auth) {
+        return database.validateAuth(auth);
     }
 }
