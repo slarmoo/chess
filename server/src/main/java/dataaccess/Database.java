@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.*;
 
 import java.util.ArrayList;
@@ -61,6 +62,26 @@ public class Database {
 
     public Collection<Game> getGames() {
         return gameCollection;
+    }
+
+    public void updateGame(String username, ChessGame.TeamColor playerColor, int gameID) {
+        Game g = getGameByID(gameID);
+        if(g != null) {
+            String whiteUsername = playerColor == ChessGame.TeamColor.WHITE ? username : g.whiteUsername();
+            String blackUsername = playerColor != ChessGame.TeamColor.WHITE ? username : g.whiteUsername();
+            Game updatedGame = new Game(g.gameID(), whiteUsername, blackUsername, g.gameName(), g.game());
+            gameCollection.add(updatedGame);
+        }
+    }
+
+    private Game getGameByID(int ID) {
+        for(Game g : gameCollection) {
+            if(g.gameID() == ID) {
+                gameCollection.remove(g);
+                return g;
+            }
+        }
+        return null;
     }
 
     private void printUserDatabase() {

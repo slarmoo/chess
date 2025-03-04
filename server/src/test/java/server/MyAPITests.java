@@ -11,6 +11,7 @@ import dataaccess.*;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Locale;
 import model.*;
@@ -128,6 +129,42 @@ public class MyAPITests {
             Assertions.assertEquals(newUser, database.findUser(newUser));
             Assertions.assertEquals(b, database.findAuth(b));
             Assertions.assertNotEquals(a, b);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Successful Create Game")
+    public void createGame() {
+        try {
+            Game g = service.createGame(existingUserAuth, "gameName");
+            Assertions.assertInstanceOf(Game.class, g);
+            Assertions.assertEquals("gameName", g.gameName());
+            Assertions.assertEquals(new ChessGame().getBoard(), g.game().getBoard());
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Successful Join Game")
+    public void joinGame() {
+        try {
+            Game g = service.createGame(existingUserAuth, "gameName");
+            service.joinGame(existingUserAuth, ChessGame.TeamColor.BLACK, g.gameID());
+            Collection<Game> games = database.getGames();
+            Assertions.assertEquals(1, games.size());
+            var databaseGame = games.toArray()[0];
+            Assertions.assertInstanceOf(Game.class, databaseGame);
+            Game g2 = (Game) databaseGame;
+            Assertions.assertEquals(g.game().getBoard(), g2.game().getBoard());
+            Assertions.assertEquals(g.gameID(), g2.gameID());
+            Assertions.assertEquals(g.gameName(), g2.gameName());
+            Assertions.assertEquals(existingUserAuth.username(), g2.blackUsername());
+            Assertions.assertEquals(existingUserAuth.username(), g2.whiteUsername());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 
@@ -54,5 +55,9 @@ public class Service {
 
     public Game createGame(Auth auth, String name) throws DataAccessException {
         return gamedao.addGame(auth, name);
+    }
+
+    public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
+        gamedao.joinGame(auth, playerColor, gameID);
     }
 }

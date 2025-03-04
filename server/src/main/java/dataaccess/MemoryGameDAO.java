@@ -4,7 +4,6 @@ import chess.ChessGame;
 import model.*;
 
 import java.util.Collection;
-import java.util.List;
 
 public class MemoryGameDAO implements GameDAO {
     private final Database database;
@@ -33,6 +32,15 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public Collection<Game> findAll() {
         return database.getGames();
+    }
+
+    @Override
+    public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
+        if(database.validateAuth(auth)) {
+            database.updateGame(auth.username(), playerColor, gameID);
+        } else {
+            throw new DataAccessException("Error: Unauthorized");
+        }
     }
 
     private Game createGame(String name, String username) {

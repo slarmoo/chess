@@ -96,7 +96,7 @@ public class Server {
             response.status(200);
             return new Gson().toJson(game);
         } catch (DataAccessException e) {
-            throw new exception.ResponseException(403, e.getMessage());
+            throw new exception.ResponseException(401, e.getMessage());
         }
     }
 
@@ -143,9 +143,13 @@ public class Server {
     }
 
     public Object joinGame(Request request, Response response) throws exception.ResponseException {
-        var user = new Gson().fromJson(request.body(), User.class);
+        var a = request.headers("authorization");
+        System.out.println("headers: " + request.headers());
+        System.out.println("authheader: " + a);
+        var auth = new Auth("", a);
+        var joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
         try {
-            var auth = service.login(user);
+            service.joinGame(auth, joinGameRequest.convertStringToColor(), joinGameRequest.gameID());
             response.status(200);
             return new Gson().toJson(auth);
         } catch (DataAccessException e) {
