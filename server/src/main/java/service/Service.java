@@ -27,7 +27,9 @@ public class Service {
         User u = userdao.getUser(user);
         System.out.println(u);
         if(u != null) {
-            return userdao.createAuth(user);
+            Auth a = userdao.createAuth(user);
+            userdao.addAuth(a);
+            return a;
         } else {
             throw new DataAccessException("Error: Incorrect credentials");
         }

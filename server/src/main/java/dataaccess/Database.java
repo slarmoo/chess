@@ -14,17 +14,16 @@ public class Database {
     public void addUser(User user, Auth auth) {
         userCollection.add(user);
         authCollection.add(auth);
+        System.out.println("addedUser " + userCollection.size());
     }
 
     public User findUser(User user) {
-        for(User u : userCollection) {
-            if(u.equals(user)) {
-//                System.out.println("database: " + u);
-                return u;
-            }
+        System.out.println("finding user " + userCollection.size());
+        if(userCollection.contains(user)) {
+            return user;
+        } else {
+            return null;
         }
-//        System.out.println("database: " + userCollection + " " + user);
-        return null;
     }
 
     public void addGame(Game game) {
@@ -53,6 +52,10 @@ public class Database {
 
     public void deleteAuth(Auth auth) {
         authCollection.remove(auth);
+    }
+
+    public void addAuth(Auth auth) {
+        authCollection.add(auth);
     }
 
     public void deleteGames() {

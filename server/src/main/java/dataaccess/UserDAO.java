@@ -11,5 +11,7 @@ public interface UserDAO {
 
     void deleteAuth(Auth auth);
 
+    void addAuth(Auth auth);
+
     boolean validateAuth(Auth auth);
 }

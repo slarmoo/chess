@@ -1,10 +1,13 @@
 package server;
 
 import chess.ChessGame;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
-import server.Server;
+import service.Service;
+import dataaccess.*;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
@@ -15,66 +18,119 @@ import com.google.gson.Gson;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {
-//    @AfterAll
-//    static void stopServer() {
-//        server.stop();
-//    }
-    private Server server;
-    private static TestServerFacade serverFacade;
-    private static TestUser existingUser;
-    private static TestUser newUser;
+    private Service service;
+    private Database database;
+    private static User existingUser;
+    private static User newUser;
+    private Auth existingUserAuth;
 
     @BeforeAll
     public static void init() {
-//        server = new Server();
-//        var port = server.run(0);
-//        System.out.println("Started test HTTP server on " + port);
 
-        serverFacade = new TestServerFacade("localhost", Integer.toString(8082));
+        existingUser = new User("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-//
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-//
-//        createRequest = new TestCreateRequest("testGame");
+        newUser = new User("NewUser", "newUserPassword", "nu@mail.com");
+
     }
 
     @BeforeEach
     public void setup() {
-        server = new Server();
-        server.run(8082);
+        database = new Database();
+        UserDAO userDAO = new MemoryUserDAO(database);
+        existingUserAuth = userDAO.createAuth(existingUser);
+        database.addUser(existingUser, existingUserAuth);
+        service = new service.Service(userDAO, new MemoryGameDAO(database));
     }
 
     @AfterEach
     public void cleanUp() {
-        server.stop();
-        server = null;
     }
 
     @Test
     @Order(1)
-    @DisplayName("Using port")
-    public void usingPort() {
-        Assertions.assertEquals(8082, server.port());
+    @DisplayName("Database has existing user")
+    public void checkDatabase() {
+        Assertions.assertEquals(existingUser, database.findUser(existingUser));
+        Assertions.assertEquals(existingUserAuth, database.findAuth(existingUserAuth));
     }
 
     @Test
     @Order(2)
-    @DisplayName("Post User")
-    public void postUser() {
-        TestAuthResult loginResult = serverFacade.login(existingUser);
-
-        assertHttpOk(loginResult);
-        Assertions.assertEquals(existingUser.getUsername(), loginResult.getUsername(),
-                "Response did not give the same username as user");
-        Assertions.assertNotNull(loginResult.getAuthToken(), "Response did not return authentication String");
+    @DisplayName("Successful Login")
+    public void login() {
+        try {
+            Auth a = service.login(existingUser);
+            Assertions.assertInstanceOf(Auth.class, a);
+            Assertions.assertEquals(existingUser, database.findUser(existingUser));
+            Assertions.assertEquals(a, database.findAuth(a));
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
-    private void assertHttpOk(TestResult result) {
-        Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "Server response code was not 200 OK (message: %s)".formatted(result.getMessage()));
-        Assertions.assertFalse(result.getMessage() != null &&
-                        result.getMessage().toLowerCase(Locale.ROOT).contains("error"),
-                "Result returned an error message");
+    @Test
+    @Order(3)
+    @DisplayName("Successful Logout")
+    public void logout() {
+        service.logout(existingUserAuth);
+        Assertions.assertEquals(existingUser, database.findUser(existingUser));
+        Assertions.assertNull(database.findAuth(existingUserAuth));
     }
+
+    @Test
+    @Order(4)
+    @DisplayName("Successful Register")
+    public void register() {
+        try {
+            Auth a = service.addUser(newUser);
+            Assertions.assertInstanceOf(Auth.class, a);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertEquals(a, database.findAuth(a));
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Successful Register then logout")
+    public void registerLogout() {
+        try {
+            Auth a = service.addUser(newUser);
+            Assertions.assertInstanceOf(Auth.class, a);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertEquals(a, database.findAuth(a));
+            service.logout(a);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertNull(database.findAuth(a));
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Successful Register then logout then login")
+    public void registerLogoutLogin() {
+        try {
+            System.out.println("register");
+            Auth a = service.addUser(newUser);
+            Assertions.assertInstanceOf(Auth.class, a);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertEquals(a, database.findAuth(a));
+            System.out.println("logout");
+            service.logout(a);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertNull(database.findAuth(a));
+            System.out.println("login");
+            Auth b = service.login(newUser);
+            Assertions.assertInstanceOf(Auth.class, b);
+            Assertions.assertEquals(newUser, database.findUser(newUser));
+            Assertions.assertEquals(b, database.findAuth(b));
+            Assertions.assertNotEquals(a, b);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
 }

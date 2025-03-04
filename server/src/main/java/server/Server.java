@@ -35,6 +35,10 @@ public class Server {
 
         Spark.delete("/session", this::logoutUser);
 
+        Spark.get("/game", this::getGames);
+
+        Spark.put("/game", this::joinGame);
+
         Spark.exception(exception.ResponseException.class, this::exceptionHandler);
 
 
@@ -76,6 +80,7 @@ public class Server {
     }
 
     private Object createGame(Request request, Response response) throws exception.ResponseException {
+        System.out.println(request.headers().toString() + " " + request.body());
         var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
         var game = new Gson().fromJson(request.body(), Game.class);
         try {
@@ -89,7 +94,6 @@ public class Server {
     }
 
     public Object loginUser(Request request, Response response) throws exception.ResponseException {
-        System.out.println(request.body());
         var user = new Gson().fromJson(request.body(), User.class);
         try {
             var auth = service.login(user);
@@ -102,9 +106,34 @@ public class Server {
     }
 
     public Object logoutUser(Request request, Response response) {
+        System.out.println(request.headers().toString() + " " + request.headers().toArray()[0]);
         var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
         service.logout(auth);
         response.status(200);
+        return "";
+    }
+
+    public Object getGames(Request request, Response response) throws exception.ResponseException {
+        var user = new Gson().fromJson(request.body(), User.class);
+        try {
+            var auth = service.login(user);
+            response.body(new Gson().toJson(auth));
+            response.status(200);
+        } catch (DataAccessException e) {
+            throw new exception.ResponseException(401, e.getMessage());
+        }
+        return "";
+    }
+
+    public Object joinGame(Request request, Response response) throws exception.ResponseException {
+        var user = new Gson().fromJson(request.body(), User.class);
+        try {
+            var auth = service.login(user);
+            response.body(new Gson().toJson(auth));
+            response.status(200);
+        } catch (DataAccessException e) {
+            throw new exception.ResponseException(401, e.getMessage());
+        }
         return "";
     }
 }

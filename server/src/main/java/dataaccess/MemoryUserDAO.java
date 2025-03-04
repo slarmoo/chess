@@ -3,6 +3,8 @@ package dataaccess;
 import model.Auth;
 import model.User;
 
+import java.util.UUID;
+
 public class MemoryUserDAO implements UserDAO {
     private final Database database;
 
@@ -22,7 +24,11 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public Auth createAuth(User user) {
-        return new Auth(user.username(), user.hashCode() + "");
+        return new Auth(user.username(), UUID.randomUUID() + "");
+    }
+
+    public void addAuth(Auth auth) {
+        database.addAuth(auth);
     }
 
     @Override
@@ -31,7 +37,7 @@ public class MemoryUserDAO implements UserDAO {
         if(u != null) {
             return u;
         } else {
-//            System.out.println("userdao getUser: none");
+            System.out.println("userdao getUser: none");
             return null;
         }
     }

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.*;
 
 import java.util.Collection;
@@ -36,6 +37,6 @@ public class MemoryGameDAO implements GameDAO {
 
     private Game createGame(String name, String username) {
         id++;
-        return new Game(id, username, "", name);
+        return new Game(id, username, "", name, new ChessGame());
     }
 }
