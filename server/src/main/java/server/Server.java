@@ -9,6 +9,9 @@ import spark.*;
 import service.*;
 import model.*;
 
+import java.util.Collection;
+import java.util.Map;
+
 //import java.util.Map;
 
 public class Server {
@@ -69,71 +72,84 @@ public class Server {
 
     private Object createUser(Request request, Response response) throws exception.ResponseException {
         var user = new Gson().fromJson(request.body(), User.class);
+        System.out.println(user);
+        if(user.username() == null || user.email() == null || user.password() == null) {
+            throw new exception.ResponseException(400, "Error: Bad Request");
+        }
         try {
             var auth = service.addUser(user);
-            response.body(new Gson().toJson(auth));
             response.status(200);
+            return new Gson().toJson(auth);
         } catch (DataAccessException e) {
             throw new exception.ResponseException(403, e.getMessage());
         }
-        return "";
     }
 
     private Object createGame(Request request, Response response) throws exception.ResponseException {
-        System.out.println(request.headers().toString() + " " + request.body());
-        var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
+        var a = request.headers("authorization");
+        System.out.println("headers: " + request.headers());
+        System.out.println("authheader: " + a);
+        var auth = new Auth("", a);
         var game = new Gson().fromJson(request.body(), Game.class);
         try {
             game = service.createGame(auth, game.gameName());
-            response.body(new Gson().toJson(game));
             response.status(200);
+            return new Gson().toJson(game);
         } catch (DataAccessException e) {
             throw new exception.ResponseException(403, e.getMessage());
         }
-        return "";
     }
 
     public Object loginUser(Request request, Response response) throws exception.ResponseException {
         var user = new Gson().fromJson(request.body(), User.class);
+        System.out.println(user);
         try {
             var auth = service.login(user);
-            response.body(new Gson().toJson(auth));
+            System.out.println(auth);
             response.status(200);
+            return new Gson().toJson(auth);
         } catch (DataAccessException e) {
             throw new exception.ResponseException(401, e.getMessage());
         }
-        return "";
     }
 
-    public Object logoutUser(Request request, Response response) {
-        System.out.println(request.headers().toString() + " " + request.headers().toArray()[0]);
-        var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
-        service.logout(auth);
-        response.status(200);
+    public Object logoutUser(Request request, Response response) throws exception.ResponseException {
+        var a = request.headers("authorization");
+        System.out.println("headers: " + request.headers());
+        System.out.println("authheader: " + a);
+        var auth = new Auth("", a);
+        boolean b = service.logout(auth);
+        System.out.println(b);
+        if(b) {
+            response.status(200);
+        } else {
+            throw new exception.ResponseException(401, "Error: Unauthorized");
+        }
         return "";
     }
 
     public Object getGames(Request request, Response response) throws exception.ResponseException {
-        var user = new Gson().fromJson(request.body(), User.class);
+        var a = request.headers("authorization");
+        System.out.println("headers: " + request.headers());
+        System.out.println("authheader: " + a);
+        var auth = new Auth("", a);
         try {
-            var auth = service.login(user);
-            response.body(new Gson().toJson(auth));
+            Collection<Game> games = service.getGames(auth);
             response.status(200);
+            return new Gson().toJson(Map.of("games", games.toArray()));
         } catch (DataAccessException e) {
             throw new exception.ResponseException(401, e.getMessage());
         }
-        return "";
     }
 
     public Object joinGame(Request request, Response response) throws exception.ResponseException {
         var user = new Gson().fromJson(request.body(), User.class);
         try {
             var auth = service.login(user);
-            response.body(new Gson().toJson(auth));
             response.status(200);
+            return new Gson().toJson(auth);
         } catch (DataAccessException e) {
             throw new exception.ResponseException(401, e.getMessage());
         }
-        return "";
     }
 }

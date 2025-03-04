@@ -20,6 +20,6 @@ public record Auth (String username, String authToken) {
         if (!(o instanceof Auth(String username1, String token))) {
             return false;
         }
-        return Objects.equals(username, username1) && Objects.equals(authToken, token);
+        return /*Objects.equals(username, username1) && */Objects.equals(authToken, token);
     }
 }

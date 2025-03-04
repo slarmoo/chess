@@ -9,7 +9,7 @@ public interface UserDAO {
 
     User getUser(User user);
 
-    void deleteAuth(Auth auth);
+    boolean deleteAuth(Auth auth);
 
     void addAuth(Auth auth);
 

@@ -18,7 +18,7 @@ public class Database {
     }
 
     public User findUser(User user) {
-        System.out.println("finding user " + userCollection.size());
+        this.printUserDatabase();
         if(userCollection.contains(user)) {
             return user;
         } else {
@@ -31,22 +31,19 @@ public class Database {
     }
 
     public boolean validateAuth(Auth auth) {
+        System.out.println("auth: " + auth);
         for(Auth a : authCollection) {
-            if(a == auth) {
-                return true;
-            }
+            System.out.println(a);
         }
-        return false;
+        return authCollection.contains(auth);
     }
 
     public Auth findAuth(Auth auth) {
         for(Auth a : authCollection) {
             if(a.equals(auth)) {
-//                System.out.println("database: " + u);
                 return a;
             }
         }
-//        System.out.println("database: " + userCollection + " " + user);
         return null;
     }
 
@@ -64,5 +61,16 @@ public class Database {
 
     public Collection<Game> getGames() {
         return gameCollection;
+    }
+
+    private void printUserDatabase() {
+        int inc = 0;
+        for(User u : userCollection) {
+            System.out.println("User" + inc + " " + u);
+            inc++;
+        }
+        if(inc == 0) {
+            System.out.println("UserDatabase empty");
+        }
     }
 }

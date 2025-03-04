@@ -20,7 +20,7 @@ public record User (String username, String password, String email) {
         if (!(o instanceof User(String username1, String password1, String email1))) {
             return false;
         }
-//        System.out.println(email + ":" + email1 + " " + username + ":" + username1 + " " + password + ":" +password1);
-        return Objects.equals(email, email1) && Objects.equals(username, username1) && Objects.equals(password, password1);
+//      We don't care about the equivalence of emails
+        return /*Objects.equals(email, email1) &&*/ Objects.equals(username, username1) && Objects.equals(password, password1);
     }
 }
