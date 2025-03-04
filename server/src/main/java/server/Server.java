@@ -5,7 +5,6 @@ import dataaccess.DataAccessException;
 import dataaccess.Database;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
-import org.eclipse.jetty.client.HttpResponseException;
 import spark.*;
 import service.*;
 import model.*;
@@ -58,7 +57,7 @@ public class Server {
         res.body(ex.toJson());
     }
 
-    private Object deleteAll(Request request, Response response) throws exception.ResponseException {
+    private Object deleteAll(Request request, Response response) {
         service.delete();
         response.status(200);
         return "";
@@ -90,18 +89,19 @@ public class Server {
     }
 
     public Object loginUser(Request request, Response response) throws exception.ResponseException {
-        var user = new Gson().fromJson(request.headers().toString(), User.class);
+        System.out.println(request.body());
+        var user = new Gson().fromJson(request.body(), User.class);
         try {
             var auth = service.login(user);
             response.body(new Gson().toJson(auth));
             response.status(200);
         } catch (DataAccessException e) {
-            throw new exception.ResponseException(403, e.getMessage());
+            throw new exception.ResponseException(401, e.getMessage());
         }
         return "";
     }
 
-    public Object logoutUser(Request request, Response response) throws exception.ResponseException {
+    public Object logoutUser(Request request, Response response) {
         var auth = new Gson().fromJson(request.headers().toString(), Auth.class);
         service.logout(auth);
         response.status(200);

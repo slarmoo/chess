@@ -19,16 +19,17 @@ public class Service {
         if(u == null) {
             return userdao.addUser(user);
         } else {
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("Error: User already exists");
         }
     }
 
     public Auth login(User user) throws DataAccessException {
         User u = userdao.getUser(user);
+        System.out.println(u);
         if(u != null) {
             return userdao.createAuth(user);
         } else {
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("Error: Incorrect credentials");
         }
     }
 

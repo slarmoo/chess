@@ -51,6 +51,10 @@ public class Database {
         return null;
     }
 
+    public void deleteAuth(Auth auth) {
+        authCollection.remove(auth);
+    }
+
     public void deleteGames() {
         gameCollection.clear();
     }

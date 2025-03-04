@@ -38,6 +38,7 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void deleteAuth(Auth auth) {
+        database.deleteAuth(auth);
     }
 
     @Override

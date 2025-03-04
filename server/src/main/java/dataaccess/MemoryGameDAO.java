@@ -20,7 +20,7 @@ public class MemoryGameDAO implements GameDAO {
             database.addGame(game);
             return game;
         } else {
-            throw new DataAccessException("Unauthorized");
+            throw new DataAccessException("Error: Unauthorized");
         }
     }
 
