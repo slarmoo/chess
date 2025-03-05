@@ -10,10 +10,13 @@ public record JoinGameRequest(String playerColor, int gameID) {
     }
 
     public ChessGame.TeamColor convertStringToColor() {
-        if(playerColor.contains("w") || playerColor.contains("W")) {
-            return ChessGame.TeamColor.WHITE;
-        } else {
-            return  ChessGame.TeamColor.BLACK;
+        if(playerColor != null) {
+            if (playerColor.toLowerCase().contains("white")) {
+                return ChessGame.TeamColor.WHITE;
+            } else if (playerColor.toLowerCase().contains("black")) {
+                return ChessGame.TeamColor.BLACK;
+            }
         }
+        return null;
     }
 }

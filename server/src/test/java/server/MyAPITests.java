@@ -10,10 +10,8 @@ import service.Service;
 import dataaccess.*;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Locale;
+import java.util.*;
+
 import model.*;
 import com.google.gson.Gson;
 
@@ -165,6 +163,44 @@ public class MyAPITests {
             Assertions.assertEquals(g.gameName(), g2.gameName());
             Assertions.assertEquals(existingUserAuth.username(), g2.blackUsername());
             Assertions.assertEquals(existingUserAuth.username(), g2.whiteUsername());
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Successful Find Games")
+    public void findGames() {
+        try {
+            Collection<Game> gamesList = new ArrayList<>();;
+            for(int i = 0; i < 5; i++) {
+                gamesList.add(service.createGame(existingUserAuth, "game" + i));
+            }
+
+            Collection<Game> otherGamesList = service.getGames(existingUserAuth);
+
+            Assertions.assertEquals(gamesList, otherGamesList);
+        } catch (DataAccessException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Successful Clear Database")
+    public void clearDatabase() {
+        try {
+            Collection<Game> gamesList = new ArrayList<>();;
+            for(int i = 0; i < 10; i++) {
+                gamesList.add(service.createGame(existingUserAuth, "game" + i));
+            }
+
+            service.delete();
+
+            Assertions.assertEquals(0, database.authCollection.size());
+            Assertions.assertEquals(0, database.gameCollection.size());
+            Assertions.assertEquals(0, database.userCollection.size());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }

@@ -8,9 +8,9 @@ import java.util.Collection;
 
 //fake database for phase 3
 public class Database {
-    private final Collection<User> userCollection = new ArrayList<>();
-    private final Collection<Game> gameCollection = new ArrayList<>();
-    private final Collection<Auth> authCollection = new ArrayList<>();
+    public final Collection<User> userCollection = new ArrayList<>();
+    public final Collection<Game> gameCollection = new ArrayList<>();
+    public final Collection<Auth> authCollection = new ArrayList<>();
 
     public void addUser(User user, Auth auth) {
         userCollection.add(user);

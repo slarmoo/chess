@@ -136,13 +136,16 @@ public class Server {
         var a = request.headers("authorization");
         var auth = new Auth("", a);
         var joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
-        try {
-            System.out.println(joinGameRequest);
-            service.joinGame(auth, joinGameRequest.convertStringToColor(), joinGameRequest.gameID());
-            response.status(200);
-            return new Gson().toJson(auth);
-        } catch (DataAccessException e) {
-            throw new exception.ResponseException(401, e.getMessage());
+        if (joinGameRequest.convertStringToColor() == null) {
+            throw new exception.ResponseException(400, "Error: Bad Request");
+        } else {
+            try {
+                service.joinGame(auth, joinGameRequest.convertStringToColor(), joinGameRequest.gameID());
+                response.status(200);
+                return new Gson().toJson(auth);
+            } catch (DataAccessException e) {
+                throw new exception.ResponseException(401, e.getMessage());
+            }
         }
     }
 }
