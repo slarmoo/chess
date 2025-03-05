@@ -18,7 +18,6 @@ public class MemoryUserDAO implements UserDAO {
             database.addUser(user, auth);
             return auth;
         } else {
-//            System.out.println("userdao addUser: exceptionThrown");
             throw new DataAccessException("Error: User already exists");
         }
     }
@@ -37,7 +36,6 @@ public class MemoryUserDAO implements UserDAO {
         if(u != null) {
             return u;
         } else {
-            System.out.println("userdao getUser: none");
             return null;
         }
     }

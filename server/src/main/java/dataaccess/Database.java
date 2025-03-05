@@ -15,7 +15,6 @@ public class Database {
     public void addUser(User user, Auth auth) {
         userCollection.add(user);
         authCollection.add(auth);
-        System.out.println("addedUser " + userCollection.size());
     }
 
     public User findUser(User user) {
@@ -32,10 +31,6 @@ public class Database {
     }
 
     public boolean validateAuth(Auth auth) {
-        System.out.println("auth: " + auth);
-        for(Auth a : authCollection) {
-            System.out.println(a);
-        }
         return authCollection.contains(auth);
     }
 
@@ -56,8 +51,10 @@ public class Database {
         authCollection.add(auth);
     }
 
-    public void deleteGames() {
+    public void delete() {
         gameCollection.clear();
+        userCollection.clear();
+        authCollection.clear();
     }
 
     public Collection<Game> getGames() {
