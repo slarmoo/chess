@@ -10,10 +10,10 @@ public record Auth (String username, String authToken) {
         return new Gson().toJson(this);
     }
 
-    @Override
-    public int hashCode() {
-        return username.hashCode() + authToken.hashCode();
-    }
+//    @Override
+//    public int hashCode() {
+//        return username.hashCode() + authToken.hashCode();
+//    }
 
     @Override
     public boolean equals(Object o) {

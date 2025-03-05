@@ -8,7 +8,9 @@ import dataaccess.*;
 
 import java.util.*;
 
-import model.*;
+import model.Auth;
+import model.User;
+import model.Game;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {
@@ -56,6 +58,7 @@ public class MyAPITests {
             Auth a = service.login(existingUser);
             Assertions.assertInstanceOf(Auth.class, a);
             Assertions.assertEquals(existingUser, database.findUser(existingUser));
+            Assertions.assertEquals(existingUser.email(), database.findUser(existingUser).email());
             Assertions.assertEquals(a, database.findAuth(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
@@ -93,6 +96,17 @@ public class MyAPITests {
             Assertions.assertEquals(a, database.findAuth(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Unsuccessful Register")
+    public void registerF() {
+        try {
+            service.addUser(existingUser);
+        } catch (DataAccessException e) {
+            Assertions.assertEquals("Error: User already exists", e.getMessage());
         }
     }
 
@@ -153,6 +167,17 @@ public class MyAPITests {
     }
 
     @Test
+    @Order(7)
+    @DisplayName("Unsuccessful Create Game")
+    public void createGameF() {
+        try {
+            service.createGame(new Auth("", ""), "");
+        } catch (DataAccessException e) {
+            Assertions.assertEquals("Error: Unauthorized", e.getMessage());
+        }
+    }
+
+    @Test
     @Order(8)
     @DisplayName("Successful Join Game")
     public void joinGame() {
@@ -171,6 +196,18 @@ public class MyAPITests {
             Assertions.assertEquals(null, g2.whiteUsername());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Unsuccessful Join Game")
+    public void joinGameF() {
+        try {
+            Game g = service.createGame(existingUserAuth, "gameName");
+            service.joinGame(existingUserAuth, ChessGame.TeamColor.BLACK, g.gameID() * 100);
+        } catch (DataAccessException e) {
+            Assertions.assertEquals("Error: Bad Request", e.getMessage());
         }
     }
 
@@ -194,6 +231,20 @@ public class MyAPITests {
 
     @Test
     @Order(9)
+    @DisplayName("Unsuccessful Join Game")
+    public void findGamesF() {
+        try {
+            for(int i = 0; i < 5; i++) {
+                service.createGame(existingUserAuth, "game" + i);
+            }
+            service.getGames(new Auth("", ""));
+        } catch (DataAccessException e) {
+            Assertions.assertEquals("Error: Unauthorized", e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("Successful Clear Database")
     public void clearDatabase() {
         try {
