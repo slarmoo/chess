@@ -1,10 +1,9 @@
-package server;
+package service;
 
 import chess.ChessGame;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import org.junit.jupiter.api.*;
-import service.Service;
 import dataaccess.*;
 
 import java.util.*;

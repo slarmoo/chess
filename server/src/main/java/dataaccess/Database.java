@@ -68,9 +68,9 @@ public class Database {
 
     }
 
-    public Game getGameByID(int ID) {
+    public Game getGameByID(int id) {
         for(Game g : gameCollection) {
-            if(g.gameID() == ID) {
+            if(g.gameID() == id) {
                 return g;
             }
         }
