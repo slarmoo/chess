@@ -4,16 +4,12 @@ import chess.ChessGame;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import passoff.server.TestServerFacade;
 import service.Service;
 import dataaccess.*;
 
-import java.net.HttpURLConnection;
 import java.util.*;
 
 import model.*;
-import com.google.gson.Gson;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {
@@ -64,6 +60,17 @@ public class MyAPITests {
             Assertions.assertEquals(a, database.findAuth(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Unsuccessful Login")
+    public void loginF() {
+        try {
+            service.login(newUser);
+        } catch (DataAccessException e) {
+            Assertions.assertEquals("Error: Incorrect credentials", e.getMessage());
         }
     }
 
@@ -162,7 +169,7 @@ public class MyAPITests {
             Assertions.assertEquals(g.gameID(), g2.gameID());
             Assertions.assertEquals(g.gameName(), g2.gameName());
             Assertions.assertEquals(existingUserAuth.username(), g2.blackUsername());
-            Assertions.assertEquals(existingUserAuth.username(), g2.whiteUsername());
+            Assertions.assertEquals(null, g2.whiteUsername());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }
@@ -173,7 +180,7 @@ public class MyAPITests {
     @DisplayName("Successful Find Games")
     public void findGames() {
         try {
-            Collection<Game> gamesList = new ArrayList<>();;
+            Collection<Game> gamesList = new ArrayList<>();
             for(int i = 0; i < 5; i++) {
                 gamesList.add(service.createGame(existingUserAuth, "game" + i));
             }
@@ -191,9 +198,8 @@ public class MyAPITests {
     @DisplayName("Successful Clear Database")
     public void clearDatabase() {
         try {
-            Collection<Game> gamesList = new ArrayList<>();;
             for(int i = 0; i < 10; i++) {
-                gamesList.add(service.createGame(existingUserAuth, "game" + i));
+                service.createGame(existingUserAuth, "game" + i);
             }
 
             service.delete();

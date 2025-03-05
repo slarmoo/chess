@@ -61,21 +61,26 @@ public class Database {
         return gameCollection;
     }
 
-    public void updateGame(String username, ChessGame.TeamColor playerColor, int gameID) {
-        Game g = getGameByID(gameID);
-        if(g != null) {
-            String whiteUsername = playerColor == ChessGame.TeamColor.WHITE ? username : g.whiteUsername();
-            String blackUsername = playerColor != ChessGame.TeamColor.WHITE ? username : g.whiteUsername();
-            Game updatedGame = new Game(g.gameID(), whiteUsername, blackUsername, g.gameName(), g.game());
-            gameCollection.add(updatedGame);
-        }
+    public void updateGame(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame, Game oldGame) {
+        gameCollection.remove(oldGame);
+        Game updatedGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);
+        gameCollection.add(updatedGame);
+
     }
 
-    private Game getGameByID(int ID) {
+    public Game getGameByID(int ID) {
         for(Game g : gameCollection) {
             if(g.gameID() == ID) {
-                gameCollection.remove(g);
                 return g;
+            }
+        }
+        return null;
+    }
+
+    public String getUsernameByAuth(Auth auth) {
+        for(Auth a : authCollection) {
+            if(a.authToken().equals(auth.authToken())) {
+                return a.username();
             }
         }
         return null;

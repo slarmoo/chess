@@ -37,7 +37,19 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
         if(database.validateAuth(auth)) {
-            database.updateGame(auth.username(), playerColor, gameID);
+            Game game = database.getGameByID(gameID);
+            if(game != null) {
+                if((playerColor == ChessGame.TeamColor.WHITE && game.whiteUsername() != null) ||
+                    (playerColor == ChessGame.TeamColor.BLACK && game.blackUsername() != null)) {
+                    throw new DataAccessException("Error: Forbidden");
+                }
+                String username = database.getUsernameByAuth(auth);
+                String whiteUsername = playerColor == ChessGame.TeamColor.WHITE ? username : game.whiteUsername();
+                String blackUsername = playerColor == ChessGame.TeamColor.BLACK ? username : game.blackUsername();
+                database.updateGame(game.gameID(), game.gameName(), whiteUsername, blackUsername, game.game(), game);
+            } else {
+                throw new DataAccessException("Error: Bad Request");
+            }
         } else {
             throw new DataAccessException("Error: Unauthorized");
         }
@@ -45,6 +57,6 @@ public class MemoryGameDAO implements GameDAO {
 
     private Game createGame(String name, String username) {
         id++;
-        return new Game(id, username, "", name, new ChessGame());
+        return new Game(id, null, null, name, new ChessGame());
     }
 }

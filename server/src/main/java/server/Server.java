@@ -144,7 +144,13 @@ public class Server {
                 response.status(200);
                 return new Gson().toJson(auth);
             } catch (DataAccessException e) {
-                throw new exception.ResponseException(401, e.getMessage());
+                if(e.getMessage().contains("Bad Request")) {
+                    throw new exception.ResponseException(400, "Error: Bad Request");
+                } else if(e.getMessage().contains("Forbidden")) {
+                    throw new exception.ResponseException(403, "Error: Forbidden");
+                } else {
+                    throw new exception.ResponseException(401, e.getMessage());
+                }
             }
         }
     }
