@@ -1,10 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.Database;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import spark.*;
 import service.*;
 import model.*;
@@ -23,6 +20,8 @@ public class Server {
     }
 
     public int run(int desiredPort) {
+        new SQLDAO();
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("/web");

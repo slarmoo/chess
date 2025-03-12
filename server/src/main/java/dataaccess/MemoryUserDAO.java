@@ -5,7 +5,7 @@ import model.User;
 
 import java.util.UUID;
 
-public class MemoryUserDAO implements UserDAO {
+public class MemoryUserDAO extends SQLDAO implements UserDAO {
     private final Database database;
 
     public MemoryUserDAO(Database database) {

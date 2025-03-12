@@ -5,7 +5,7 @@ import model.*;
 
 import java.util.Collection;
 
-public class MemoryGameDAO implements GameDAO {
+public class MemoryGameDAO extends SQLDAO implements GameDAO {
     private final Database database;
     private int id = 0;
 
