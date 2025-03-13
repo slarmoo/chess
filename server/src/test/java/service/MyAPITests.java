@@ -35,7 +35,7 @@ public class MyAPITests {
         UserDAO userDAO = new MemoryUserDAO();
         existingUserAuth = userDAO.createAuth(existingUser);
         database.addUser(existingUser, existingUserAuth);
-        service = new service.Service(userDAO, new MemoryGameDAO(database));
+        service = new service.Service(userDAO, new MemoryGameDAO());
     }
 
     @AfterEach

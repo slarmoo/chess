@@ -6,12 +6,7 @@ import model.*;
 import java.util.Collection;
 
 public class MemoryGameDAO extends SQLDAO implements GameDAO {
-    private final Database database;
     private int id = 0;
-
-    public MemoryGameDAO(Database database) {
-        this.database = database;
-    }
 
     @Override
     public Game addGame(Auth auth, String name) throws DataAccessException {
@@ -46,7 +41,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
                 String username = this.getUsernameByAuthSQL(auth);
                 String whiteUsername = playerColor == ChessGame.TeamColor.WHITE ? username : game.whiteUsername();
                 String blackUsername = playerColor == ChessGame.TeamColor.BLACK ? username : game.blackUsername();
-                database.updateGame(game.gameID(), game.gameName(), whiteUsername, blackUsername, game.game(), game);
+                this.updateGameSQL(game.gameID(), game.gameName(), whiteUsername, blackUsername, game.game());
             } else {
                 throw new DataAccessException("Error: Bad Request");
             }

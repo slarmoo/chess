@@ -13,9 +13,9 @@ public class MyDatabaseTests {
 
     private static final SQLDAO SQLDAO = new SQLDAO();
     private static final UserDAO USER_DAO = new MemoryUserDAO();
-    private static final GameDAO GAME_DAO = new MemoryGameDAO(new Database());
-    private static final User user1 = new User("user1", "pass1", "email1");
-    private static final User user2 = new User("user2", "pass2", "email2");
+    private static final GameDAO GAME_DAO = new MemoryGameDAO();
+    private static final User USER_1 = new User("user1", "pass1", "email1");
+    private static final User USER_2 = new User("user2", "pass2", "email2");
     private Auth auth1;
     private Auth auth2;
     private Game game1;
@@ -51,20 +51,20 @@ public class MyDatabaseTests {
     @DisplayName("Add user")
     public void addUsers() {
         try {
-            this.auth1 = USER_DAO.createAuth(user1);
-            this.auth2 = USER_DAO.createAuth(user2);
-            SQLDAO.addUserSQL(user1, this.auth1);
-            SQLDAO.addUserSQL(user2, this.auth2);
+            this.auth1 = USER_DAO.createAuth(USER_1);
+            this.auth2 = USER_DAO.createAuth(USER_2);
+            SQLDAO.addUserSQL(USER_1, this.auth1);
+            SQLDAO.addUserSQL(USER_2, this.auth2);
             Collection<User> users = SQLDAO.getAllUsersSQL();
             Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
             Assertions.assertEquals(2, users.size());
             for (User usercheck : users) {
-                if (user1.username().equals(usercheck.username())) {
-                    Assertions.assertTrue(BCrypt.checkpw(user1.password(), usercheck.password()));
-                    Assertions.assertEquals(user1.email(), usercheck.email());
+                if (USER_1.username().equals(usercheck.username())) {
+                    Assertions.assertTrue(BCrypt.checkpw(USER_1.password(), usercheck.password()));
+                    Assertions.assertEquals(USER_1.email(), usercheck.email());
                 } else {
-                    Assertions.assertTrue(BCrypt.checkpw(user2.password(), usercheck.password()));
-                    Assertions.assertEquals(user2.email(), usercheck.email());
+                    Assertions.assertTrue(BCrypt.checkpw(USER_2.password(), usercheck.password()));
+                    Assertions.assertEquals(USER_2.email(), usercheck.email());
                 }
             }
             Assertions.assertEquals(2, auths.size());
@@ -135,8 +135,8 @@ public class MyDatabaseTests {
     public void getUsernameByAuth() {
         this.addUsers();
         try {
-            Assertions.assertEquals(user1.username(), SQLDAO.getUsernameByAuthSQL(this.auth1));
-            Assertions.assertEquals(user2.username(), SQLDAO.getUsernameByAuthSQL(this.auth2));
+            Assertions.assertEquals(USER_1.username(), SQLDAO.getUsernameByAuthSQL(this.auth1));
+            Assertions.assertEquals(USER_2.username(), SQLDAO.getUsernameByAuthSQL(this.auth2));
             Assertions.assertNull(SQLDAO.getUsernameByAuthSQL(new Auth("", "")));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());

@@ -182,6 +182,17 @@ public class SQLDAO {
         return null;
     }
 
+    public void updateGameSQL(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame) {
+        var statement = "DELETE FROM auth WHERE gameName=?";
+        try {
+            executeUpdate(statement, gameName);
+            Game updatedGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);
+            this.addGameSQL(updatedGame);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public void deleteAllSQL() {
         try {
             var statement = "truncate user";
