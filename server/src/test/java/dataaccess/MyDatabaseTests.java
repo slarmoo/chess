@@ -13,6 +13,10 @@ import java.util.Collection;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyDatabaseTests {
 
+    private static SQLDAO sqldao = new SQLDAO();
+//    private static UserDAO udao = new MemoryUserDAO(new Database());
+
+
     @BeforeAll
     public static void init() {
 
@@ -29,8 +33,10 @@ public class MyDatabaseTests {
 
     @Test
     @Order(1)
-    @DisplayName("Database has existing user")
+    @DisplayName("Database empty")
     public void checkDatabase() {
+        Collection<User> users = sqldao.getAllUsers();
+        Assertions.assertEquals(0, users.size());
     }
 
 }

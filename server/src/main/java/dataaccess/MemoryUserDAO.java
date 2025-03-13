@@ -14,9 +14,13 @@ public class MemoryUserDAO extends SQLDAO implements UserDAO {
 
     public Auth addUser(User user) throws DataAccessException {
         if(getUser(user) == null) {
-            Auth auth = createAuth(user);
-            database.addUser(user, auth);
-            return auth;
+            try {
+                Auth auth = createAuth(user);
+                this.addUserSQL(user, auth);
+                return auth;
+            } catch (Exception e) {
+                throw new DataAccessException("Error: " + e.getMessage());
+            }
         } else {
             throw new DataAccessException("Error: User already exists");
         }

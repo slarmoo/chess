@@ -16,11 +16,9 @@ public class Server {
     private final service.Service service = new service.Service(new MemoryUserDAO(database), new MemoryGameDAO(database));
 
     public Server() {
-//        this.service = service;
     }
 
     public int run(int desiredPort) {
-        new SQLDAO();
 
         Spark.port(desiredPort);
 
