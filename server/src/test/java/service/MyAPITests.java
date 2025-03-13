@@ -32,7 +32,7 @@ public class MyAPITests {
     @BeforeEach
     public void setup() {
         database = new Database();
-        UserDAO userDAO = new MemoryUserDAO(database);
+        UserDAO userDAO = new MemoryUserDAO();
         existingUserAuth = userDAO.createAuth(existingUser);
         database.addUser(existingUser, existingUserAuth);
         service = new service.Service(userDAO, new MemoryGameDAO(database));

@@ -96,7 +96,7 @@ public class SQLDAO {
         return null;
     }
 
-    public boolean validateAuthSQL(Auth auth) {
+    public Collection<Auth> getAllAuths() {
         var auths = new ArrayList<Auth>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -109,16 +109,36 @@ public class SQLDAO {
         } catch (Exception e) {
             System.out.println(e);
         }
-        return auths.contains(auth);
+        return auths;
+    }
+
+    public boolean validateAuthSQL(Auth auth) {
+        return this.getAllAuths().contains(auth);
     }
 
     public void deleteAuthSQL(Auth auth) {
-        var statement = "DELETE FROM auth WHERE (username, authToke)=?";
+        var statement = "DELETE FROM auth WHERE authToken=?";
         try {
-            executeUpdate(statement, auth.username(), auth.authToken());
+            executeUpdate(statement, auth.authToken());
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public Collection<Game> getAllGames() {
+        var games = new ArrayList<Game>();
+        try {
+            var conn = DatabaseManager.getConnection();
+            String statement = "select id, whiteUsername, blackUsername, gameName, chessGame from game";
+            var preparedStatement = conn.prepareStatement(statement);
+            var response = preparedStatement.executeQuery();
+            while(response.next()) {
+                games.add(parseGame(response));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return games;
     }
 
     public void deleteAllSQL() {
@@ -140,6 +160,11 @@ public class SQLDAO {
 
     private Auth parseAuth(ResultSet response) throws SQLException {
         return new Auth(response.getString("username"), response.getString("authToken"));
+    }
+
+    private Game parseGame(ResultSet response) throws SQLException {
+        return new Game(response.getInt("id"), response.getString("whiteUsername"), response.getString("blackUsername"),
+                response.getString("gameName"), new Gson().fromJson(response.getString("chessGame"), ChessGame.class));
     }
 
     //borrowed from petshop
