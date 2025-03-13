@@ -16,6 +16,7 @@ public class MyDatabaseTests {
 
     private static final SQLDAO sqldao = new SQLDAO();
     private static final UserDAO userdao = new MemoryUserDAO();
+    private static final GameDAO gamedao = new MemoryGameDAO(new Database());
     private static final User user1 = new User("user1", "pass1", "email1");
     private static final User user2 = new User("user2", "pass2", "email2");
     private Auth auth1;
@@ -38,9 +39,9 @@ public class MyDatabaseTests {
     @Order(1)
     @DisplayName("Database empty")
     public void checkDatabase() {
-        Collection<User> users = sqldao.getAllUsers();
-        Collection<Auth> auths = sqldao.getAllAuths();
-        Collection<Game> games = sqldao.getAllGames();
+        Collection<User> users = sqldao.getAllUsersSQL();
+        Collection<Auth> auths = sqldao.getAllAuthsSQL();
+        Collection<Game> games = sqldao.getAllGamesSQL();
         Assertions.assertEquals(0, users.size());
         Assertions.assertEquals(0, auths.size());
         Assertions.assertEquals(0, games.size());
@@ -55,8 +56,8 @@ public class MyDatabaseTests {
             this.auth2 = userdao.createAuth(user2);
             sqldao.addUserSQL(user1, this.auth1);
             sqldao.addUserSQL(user2, this.auth2);
-            Collection<User> users = sqldao.getAllUsers();
-            Collection<Auth> auths = sqldao.getAllAuths();
+            Collection<User> users = sqldao.getAllUsersSQL();
+            Collection<Auth> auths = sqldao.getAllAuthsSQL();
             Assertions.assertEquals(2, users.size());
             for (User usercheck : users) {
                 if (user1.username().equals(usercheck.username())) {
@@ -68,7 +69,6 @@ public class MyDatabaseTests {
                 }
             }
             Assertions.assertEquals(2, auths.size());
-            System.out.println(auths);
             Assertions.assertTrue(auths.contains(this.auth1));
             Assertions.assertTrue(auths.contains(this.auth2));
         } catch (Exception e) {
@@ -80,9 +80,9 @@ public class MyDatabaseTests {
     @Order(3)
     @DisplayName("Database still empty")
     public void checkDatabaseAgain() {
-        Collection<User> users = sqldao.getAllUsers();
-        Collection<Auth> auths = sqldao.getAllAuths();
-        Collection<Game> games = sqldao.getAllGames();
+        Collection<User> users = sqldao.getAllUsersSQL();
+        Collection<Auth> auths = sqldao.getAllAuthsSQL();
+        Collection<Game> games = sqldao.getAllGamesSQL();
         Assertions.assertEquals(0, users.size());
         Assertions.assertEquals(0, auths.size());
         Assertions.assertEquals(0, games.size());
@@ -94,16 +94,31 @@ public class MyDatabaseTests {
     public void logoutUsers() {
         this.addUser();
         sqldao.deleteAuthSQL(this.auth1);
-        Collection<Auth> auths = sqldao.getAllAuths();
-        System.out.println(auths);
+        Collection<Auth> auths = sqldao.getAllAuthsSQL();
         Assertions.assertEquals(1, auths.size());
         Assertions.assertTrue(auths.contains(this.auth2));
         Assertions.assertFalse(auths.contains(this.auth1));
         sqldao.deleteAuthSQL(this.auth2);
-        System.out.println(auths);
+        auths = sqldao.getAllAuthsSQL();
         Assertions.assertEquals(0, auths.size());
         Assertions.assertFalse(auths.contains(this.auth1));
         Assertions.assertFalse(auths.contains(this.auth2));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("add games")
+    public void addGames() {
+        this.addUser();
+        try {
+            Game game1 = gamedao.addGame(this.auth1, "game1");
+            Game game2 = gamedao.addGame(this.auth2, "game2");
+            Collection<Game> games = sqldao.getAllGamesSQL();
+            Assertions.assertTrue(games.contains(game1));
+            Assertions.assertTrue(games.contains(game2));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
 }

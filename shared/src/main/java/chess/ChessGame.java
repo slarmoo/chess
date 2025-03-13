@@ -17,6 +17,14 @@ public class ChessGame {
         this.board.resetBoard();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ChessGame other) {
+            return other.board.equals(this.board) && other.teamColor.equals(this.teamColor);
+        }
+        return false;
+    }
+
     private TeamColor teamColor;
     private ChessBoard board;
 

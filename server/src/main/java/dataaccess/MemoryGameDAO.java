@@ -15,9 +15,9 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public Game addGame(Auth auth, String name) throws DataAccessException {
-        if(database.validateAuth(auth)) {
+        if(this.validateAuthSQL(auth)) {
             Game game = this.createGame(name, auth.username());
-            database.addGame(game);
+            this.addGameSQL(game);
             return game;
         } else {
             throw new DataAccessException("Error: Unauthorized");
@@ -31,7 +31,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public Collection<Game> findAll() {
-        return database.getGames();
+        return this.getAllGamesSQL();
     }
 
     @Override

@@ -72,7 +72,16 @@ public class SQLDAO {
         }
     }
 
-    public Collection<User> getAllUsers() {
+    public void addGameSQL(Game game) {
+        String statement = "insert into game (id, whiteUsername, blackUsername, gameName, chessGame) values (?, ?, ?, ?, ?)";
+        try {
+            executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public Collection<User> getAllUsersSQL() {
         var users = new ArrayList<User>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -89,14 +98,14 @@ public class SQLDAO {
     }
 
     public User getUserSQL(User user) {
-        Collection<User> users = this.getAllUsers();
+        Collection<User> users = this.getAllUsersSQL();
         if(users.contains(user)) {
             return user;
         }
         return null;
     }
 
-    public Collection<Auth> getAllAuths() {
+    public Collection<Auth> getAllAuthsSQL() {
         var auths = new ArrayList<Auth>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -113,7 +122,7 @@ public class SQLDAO {
     }
 
     public boolean validateAuthSQL(Auth auth) {
-        return this.getAllAuths().contains(auth);
+        return this.getAllAuthsSQL().contains(auth);
     }
 
     public void deleteAuthSQL(Auth auth) {
@@ -125,7 +134,7 @@ public class SQLDAO {
         }
     }
 
-    public Collection<Game> getAllGames() {
+    public Collection<Game> getAllGamesSQL() {
         var games = new ArrayList<Game>();
         try {
             var conn = DatabaseManager.getConnection();
