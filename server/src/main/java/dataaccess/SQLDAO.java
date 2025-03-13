@@ -166,6 +166,22 @@ public class SQLDAO {
         return null;
     }
 
+    public String getUsernameByAuthSQL(Auth auth) {
+        try {
+            var conn = DatabaseManager.getConnection();
+            String statement = "select username, authToken from auth where authToken=?";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setString(1, auth.authToken());
+            var response = preparedStatement.executeQuery();
+            if(response.next()) {
+                return parseAuth(response).username();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
     public void deleteAllSQL() {
         try {
             var statement = "truncate user";

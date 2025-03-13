@@ -52,7 +52,7 @@ public class MyDatabaseTests {
     @Test
     @Order(2)
     @DisplayName("Add user")
-    public void addUser() {
+    public void addUsers() {
         try {
             this.auth1 = userdao.createAuth(user1);
             this.auth2 = userdao.createAuth(user2);
@@ -94,7 +94,7 @@ public class MyDatabaseTests {
     @Order(4)
     @DisplayName("logout Users")
     public void logoutUsers() {
-        this.addUser();
+        this.addUsers();
         sqldao.deleteAuthSQL(this.auth1);
         Collection<Auth> auths = sqldao.getAllAuthsSQL();
         Assertions.assertEquals(1, auths.size());
@@ -111,7 +111,7 @@ public class MyDatabaseTests {
     @Order(5)
     @DisplayName("add games")
     public void addGames() {
-        this.addUser();
+        this.addUsers();
         try {
             this.game1 = gamedao.addGame(this.auth1, "game1");
             this.game2 = gamedao.addGame(this.auth2, "game2");
@@ -132,6 +132,20 @@ public class MyDatabaseTests {
             Assertions.assertEquals(this.game1, sqldao.getGameByIDSQL(this.game1.gameID()));
             Assertions.assertEquals(this.game2, sqldao.getGameByIDSQL(this.game2.gameID()));
             Assertions.assertNull(sqldao.getGameByIDSQL(-1));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("get username by auth")
+    public void getUsernameByAuth() {
+        this.addUsers();
+        try {
+            Assertions.assertEquals(user1.username(), sqldao.getUsernameByAuthSQL(this.auth1));
+            Assertions.assertEquals(user2.username(), sqldao.getUsernameByAuthSQL(this.auth2));
+            Assertions.assertNull(sqldao.getUsernameByAuthSQL(new Auth("", "")));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }

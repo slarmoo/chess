@@ -37,13 +37,13 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
     @Override
     public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
         if(this.validateAuthSQL(auth)) {
-            Game game = database.getGameByID(gameID);
+            Game game = this.getGameByIDSQL(gameID);
             if(game != null) {
                 if((playerColor == ChessGame.TeamColor.WHITE && game.whiteUsername() != null) ||
                     (playerColor == ChessGame.TeamColor.BLACK && game.blackUsername() != null)) {
                     throw new DataAccessException("Error: Forbidden");
                 }
-                String username = database.getUsernameByAuth(auth);
+                String username = this.getUsernameByAuthSQL(auth);
                 String whiteUsername = playerColor == ChessGame.TeamColor.WHITE ? username : game.whiteUsername();
                 String blackUsername = playerColor == ChessGame.TeamColor.BLACK ? username : game.blackUsername();
                 database.updateGame(game.gameID(), game.gameName(), whiteUsername, blackUsername, game.game(), game);
