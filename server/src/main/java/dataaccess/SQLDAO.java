@@ -31,7 +31,7 @@ public class SQLDAO {
             """,
             """
             CREATE TABLE IF NOT EXISTS  game (
-            `id` int NOT NULL AUTO_INCREMENT,
+            `id` int NOT NULL,
             `whiteUsername` varchar(20),
             `blackUsername` varchar(20),
             `gameName` varchar(20) NOT NULL,
@@ -148,6 +148,22 @@ public class SQLDAO {
             System.out.println(e);
         }
         return games;
+    }
+
+    public Game getGameByIDSQL(int id) {
+        try {
+            var conn = DatabaseManager.getConnection();
+            String statement = "select id, whiteUsername, blackUsername, gameName, chessGame from game where id=?";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setInt(1, id);
+            var response = preparedStatement.executeQuery();
+            if(response.next()) {
+                return parseGame(response);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
     }
 
     public void deleteAllSQL() {

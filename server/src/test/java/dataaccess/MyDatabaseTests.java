@@ -21,6 +21,8 @@ public class MyDatabaseTests {
     private static final User user2 = new User("user2", "pass2", "email2");
     private Auth auth1;
     private Auth auth2;
+    private Game game1;
+    private Game game2;
 
     @BeforeAll
     public static void init() {
@@ -111,11 +113,25 @@ public class MyDatabaseTests {
     public void addGames() {
         this.addUser();
         try {
-            Game game1 = gamedao.addGame(this.auth1, "game1");
-            Game game2 = gamedao.addGame(this.auth2, "game2");
+            this.game1 = gamedao.addGame(this.auth1, "game1");
+            this.game2 = gamedao.addGame(this.auth2, "game2");
             Collection<Game> games = sqldao.getAllGamesSQL();
-            Assertions.assertTrue(games.contains(game1));
-            Assertions.assertTrue(games.contains(game2));
+            Assertions.assertTrue(games.contains(this.game1));
+            Assertions.assertTrue(games.contains(this.game2));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("get game by id")
+    public void getGameByID() {
+        this.addGames();
+        try {
+            Assertions.assertEquals(this.game1, sqldao.getGameByIDSQL(this.game1.gameID()));
+            Assertions.assertEquals(this.game2, sqldao.getGameByIDSQL(this.game2.gameID()));
+            Assertions.assertNull(sqldao.getGameByIDSQL(-1));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }

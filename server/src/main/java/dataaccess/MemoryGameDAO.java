@@ -36,7 +36,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
-        if(database.validateAuth(auth)) {
+        if(this.validateAuthSQL(auth)) {
             Game game = database.getGameByID(gameID);
             if(game != null) {
                 if((playerColor == ChessGame.TeamColor.WHITE && game.whiteUsername() != null) ||
