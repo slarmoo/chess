@@ -1,22 +1,19 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.Auth;
 import model.Game;
 import model.User;
 import org.junit.jupiter.api.*;
 import org.mindrot.jbcrypt.BCrypt;
-import service.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyDatabaseTests {
 
-    private static final SQLDAO sqldao = new SQLDAO();
-    private static final UserDAO userdao = new MemoryUserDAO();
-    private static final GameDAO gamedao = new MemoryGameDAO(new Database());
+    private static final SQLDAO SQLDAO = new SQLDAO();
+    private static final UserDAO USER_DAO = new MemoryUserDAO();
+    private static final GameDAO GAME_DAO = new MemoryGameDAO(new Database());
     private static final User user1 = new User("user1", "pass1", "email1");
     private static final User user2 = new User("user2", "pass2", "email2");
     private Auth auth1;
@@ -30,7 +27,7 @@ public class MyDatabaseTests {
 
     @BeforeEach
     public void setup() {
-        sqldao.deleteAllSQL();
+        SQLDAO.deleteAllSQL();
     }
 
     @AfterEach
@@ -41,9 +38,9 @@ public class MyDatabaseTests {
     @Order(1)
     @DisplayName("Database empty")
     public void checkDatabase() {
-        Collection<User> users = sqldao.getAllUsersSQL();
-        Collection<Auth> auths = sqldao.getAllAuthsSQL();
-        Collection<Game> games = sqldao.getAllGamesSQL();
+        Collection<User> users = SQLDAO.getAllUsersSQL();
+        Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
+        Collection<Game> games = SQLDAO.getAllGamesSQL();
         Assertions.assertEquals(0, users.size());
         Assertions.assertEquals(0, auths.size());
         Assertions.assertEquals(0, games.size());
@@ -54,12 +51,12 @@ public class MyDatabaseTests {
     @DisplayName("Add user")
     public void addUsers() {
         try {
-            this.auth1 = userdao.createAuth(user1);
-            this.auth2 = userdao.createAuth(user2);
-            sqldao.addUserSQL(user1, this.auth1);
-            sqldao.addUserSQL(user2, this.auth2);
-            Collection<User> users = sqldao.getAllUsersSQL();
-            Collection<Auth> auths = sqldao.getAllAuthsSQL();
+            this.auth1 = USER_DAO.createAuth(user1);
+            this.auth2 = USER_DAO.createAuth(user2);
+            SQLDAO.addUserSQL(user1, this.auth1);
+            SQLDAO.addUserSQL(user2, this.auth2);
+            Collection<User> users = SQLDAO.getAllUsersSQL();
+            Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
             Assertions.assertEquals(2, users.size());
             for (User usercheck : users) {
                 if (user1.username().equals(usercheck.username())) {
@@ -82,12 +79,7 @@ public class MyDatabaseTests {
     @Order(3)
     @DisplayName("Database still empty")
     public void checkDatabaseAgain() {
-        Collection<User> users = sqldao.getAllUsersSQL();
-        Collection<Auth> auths = sqldao.getAllAuthsSQL();
-        Collection<Game> games = sqldao.getAllGamesSQL();
-        Assertions.assertEquals(0, users.size());
-        Assertions.assertEquals(0, auths.size());
-        Assertions.assertEquals(0, games.size());
+        this.checkDatabase();
     }
 
     @Test
@@ -95,13 +87,13 @@ public class MyDatabaseTests {
     @DisplayName("logout Users")
     public void logoutUsers() {
         this.addUsers();
-        sqldao.deleteAuthSQL(this.auth1);
-        Collection<Auth> auths = sqldao.getAllAuthsSQL();
+        SQLDAO.deleteAuthSQL(this.auth1);
+        Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
         Assertions.assertEquals(1, auths.size());
         Assertions.assertTrue(auths.contains(this.auth2));
         Assertions.assertFalse(auths.contains(this.auth1));
-        sqldao.deleteAuthSQL(this.auth2);
-        auths = sqldao.getAllAuthsSQL();
+        SQLDAO.deleteAuthSQL(this.auth2);
+        auths = SQLDAO.getAllAuthsSQL();
         Assertions.assertEquals(0, auths.size());
         Assertions.assertFalse(auths.contains(this.auth1));
         Assertions.assertFalse(auths.contains(this.auth2));
@@ -113,9 +105,9 @@ public class MyDatabaseTests {
     public void addGames() {
         this.addUsers();
         try {
-            this.game1 = gamedao.addGame(this.auth1, "game1");
-            this.game2 = gamedao.addGame(this.auth2, "game2");
-            Collection<Game> games = sqldao.getAllGamesSQL();
+            this.game1 = GAME_DAO.addGame(this.auth1, "game1");
+            this.game2 = GAME_DAO.addGame(this.auth2, "game2");
+            Collection<Game> games = SQLDAO.getAllGamesSQL();
             Assertions.assertTrue(games.contains(this.game1));
             Assertions.assertTrue(games.contains(this.game2));
         } catch (Exception e) {
@@ -129,9 +121,9 @@ public class MyDatabaseTests {
     public void getGameByID() {
         this.addGames();
         try {
-            Assertions.assertEquals(this.game1, sqldao.getGameByIDSQL(this.game1.gameID()));
-            Assertions.assertEquals(this.game2, sqldao.getGameByIDSQL(this.game2.gameID()));
-            Assertions.assertNull(sqldao.getGameByIDSQL(-1));
+            Assertions.assertEquals(this.game1, SQLDAO.getGameByIDSQL(this.game1.gameID()));
+            Assertions.assertEquals(this.game2, SQLDAO.getGameByIDSQL(this.game2.gameID()));
+            Assertions.assertNull(SQLDAO.getGameByIDSQL(-1));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }
@@ -143,9 +135,9 @@ public class MyDatabaseTests {
     public void getUsernameByAuth() {
         this.addUsers();
         try {
-            Assertions.assertEquals(user1.username(), sqldao.getUsernameByAuthSQL(this.auth1));
-            Assertions.assertEquals(user2.username(), sqldao.getUsernameByAuthSQL(this.auth2));
-            Assertions.assertNull(sqldao.getUsernameByAuthSQL(new Auth("", "")));
+            Assertions.assertEquals(user1.username(), SQLDAO.getUsernameByAuthSQL(this.auth1));
+            Assertions.assertEquals(user2.username(), SQLDAO.getUsernameByAuthSQL(this.auth2));
+            Assertions.assertNull(SQLDAO.getUsernameByAuthSQL(new Auth("", "")));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }

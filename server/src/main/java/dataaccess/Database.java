@@ -26,14 +26,6 @@ public class Database {
         }
     }
 
-    public void addGame(Game game) {
-        gameCollection.add(game);
-    }
-
-    public boolean validateAuth(Auth auth) {
-        return authCollection.contains(auth);
-    }
-
     public Auth findAuth(Auth auth) {
         for(Auth a : authCollection) {
             if(a.equals(auth)) {
@@ -43,19 +35,7 @@ public class Database {
         return null;
     }
 
-    public void deleteAuth(Auth auth) {
-        authCollection.remove(auth);
-    }
 
-    public void addAuth(Auth auth) {
-        authCollection.add(auth);
-    }
-
-    public void delete() {
-        gameCollection.clear();
-        userCollection.clear();
-        authCollection.clear();
-    }
 
     public Collection<Game> getGames() {
         return gameCollection;
@@ -66,24 +46,6 @@ public class Database {
         Game updatedGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);
         gameCollection.add(updatedGame);
 
-    }
-
-    public Game getGameByID(int id) {
-        for(Game g : gameCollection) {
-            if(g.gameID() == id) {
-                return g;
-            }
-        }
-        return null;
-    }
-
-    public String getUsernameByAuth(Auth auth) {
-        for(Auth a : authCollection) {
-            if(a.authToken().equals(auth.authToken())) {
-                return a.username();
-            }
-        }
-        return null;
     }
 
     private void printUserDatabase() {

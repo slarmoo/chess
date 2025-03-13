@@ -16,7 +16,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
     @Override
     public Game addGame(Auth auth, String name) throws DataAccessException {
         if(this.validateAuthSQL(auth)) {
-            Game game = this.createGame(name, auth.username());
+            Game game = this.createGame(name);
             this.addGameSQL(game);
             return game;
         } else {
@@ -55,7 +55,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
         }
     }
 
-    private Game createGame(String name, String username) {
+    private Game createGame(String name) {
         id++;
         return new Game(id, null, null, name, new ChessGame());
     }

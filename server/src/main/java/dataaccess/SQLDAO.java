@@ -15,7 +15,7 @@ import static java.sql.Types.NULL;
 
 public class SQLDAO {
 
-    private static final String[] createStatements = {
+    private static final String[] CREATE_STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
             `username` varchar(20) NOT NULL,
@@ -44,7 +44,7 @@ public class SQLDAO {
     static {
         try (var conn = DatabaseManager.getConnection()) {
             DatabaseManager.createDatabase();
-            for (var statement : createStatements) {
+            for (var statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
@@ -215,10 +215,15 @@ public class SQLDAO {
             var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS);
             for (var i = 0; i < params.length; i++) {
                 var param = params[i];
-                if (param instanceof String p) ps.setString(i + 1, p);
-                else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                else if (param instanceof ChessGame p) ps.setString(i + 1, new Gson().toJson(p));
-                else if (param == null) ps.setNull(i + 1, NULL);
+                if (param instanceof String p) {
+                    ps.setString(i + 1, p);
+                } else if (param instanceof Integer p) {
+                    ps.setInt(i + 1, p);
+                } else if (param instanceof ChessGame p) {
+                    ps.setString(i + 1, new Gson().toJson(p));
+                } else if (param == null) {
+                    ps.setNull(i + 1, NULL);
+                }
             }
             ps.executeUpdate();
 
