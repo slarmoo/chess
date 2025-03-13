@@ -11,14 +11,15 @@ import java.util.*;
 import model.Auth;
 import model.User;
 import model.Game;
+import org.mindrot.jbcrypt.BCrypt;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {
     private Service service;
-    private Database database;
     private static User existingUser;
     private static User newUser;
     private Auth existingUserAuth;
+    private final SQLDAO sqldao = new SQLDAO();
 
     @BeforeAll
     public static void init() {
@@ -31,11 +32,15 @@ public class MyAPITests {
 
     @BeforeEach
     public void setup() {
-        database = new Database();
         UserDAO userDAO = new MemoryUserDAO();
-        existingUserAuth = userDAO.createAuth(existingUser);
-        database.addUser(existingUser, existingUserAuth);
-        service = new service.Service(userDAO, new MemoryGameDAO());
+        GameDAO gameDAO = new MemoryGameDAO();
+        try {
+            gameDAO.deleteAll();
+            existingUserAuth = userDAO.addUser(existingUser);
+            service = new service.Service(userDAO, gameDAO);
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @AfterEach
@@ -46,8 +51,9 @@ public class MyAPITests {
     @Order(1)
     @DisplayName("Database has existing user")
     public void checkDatabase() {
-        Assertions.assertEquals(existingUser, database.findUser(existingUser));
-        Assertions.assertEquals(existingUserAuth, database.findAuth(existingUserAuth));
+        User sqluser = sqldao.getUserSQL(existingUser);
+        Assertions.assertEquals(existingUser, sqluser);
+        Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(existingUserAuth));
     }
 
     @Test
@@ -57,9 +63,9 @@ public class MyAPITests {
         try {
             Auth a = service.login(existingUser);
             Assertions.assertInstanceOf(Auth.class, a);
-            Assertions.assertEquals(existingUser, database.findUser(existingUser));
-            Assertions.assertEquals(existingUser.email(), database.findUser(existingUser).email());
-            Assertions.assertEquals(a, database.findAuth(a));
+            Assertions.assertEquals(existingUser, sqldao.getUserSQL(existingUser));
+            Assertions.assertEquals(existingUser.email(), sqldao.getUserSQL(existingUser).email());
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }
@@ -81,8 +87,8 @@ public class MyAPITests {
     @DisplayName("Successful Logout")
     public void logout() {
         service.logout(existingUserAuth);
-        Assertions.assertEquals(existingUser, database.findUser(existingUser));
-        Assertions.assertNull(database.findAuth(existingUserAuth));
+        Assertions.assertEquals(existingUser, sqldao.getUserSQL(existingUser));
+        Assertions.assertFalse(sqldao.getAllAuthsSQL().contains(existingUserAuth));
     }
 
     @Test
@@ -92,8 +98,8 @@ public class MyAPITests {
         try {
             Auth a = service.addUser(newUser);
             Assertions.assertInstanceOf(Auth.class, a);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertEquals(a, database.findAuth(a));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }
@@ -117,11 +123,11 @@ public class MyAPITests {
         try {
             Auth a = service.addUser(newUser);
             Assertions.assertInstanceOf(Auth.class, a);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertEquals(a, database.findAuth(a));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(a));
             service.logout(a);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertNull(database.findAuth(a));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertFalse(sqldao.getAllAuthsSQL().contains(a));
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }
@@ -135,17 +141,17 @@ public class MyAPITests {
             System.out.println("register");
             Auth a = service.addUser(newUser);
             Assertions.assertInstanceOf(Auth.class, a);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertEquals(a, database.findAuth(a));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(a));
             System.out.println("logout");
             service.logout(a);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertNull(database.findAuth(a));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertFalse(sqldao.getAllAuthsSQL().contains(a));
             System.out.println("login");
             Auth b = service.login(newUser);
             Assertions.assertInstanceOf(Auth.class, b);
-            Assertions.assertEquals(newUser, database.findUser(newUser));
-            Assertions.assertEquals(b, database.findAuth(b));
+            Assertions.assertEquals(newUser, sqldao.getUserSQL(newUser));
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(b));
             Assertions.assertNotEquals(a, b);
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
@@ -184,7 +190,7 @@ public class MyAPITests {
         try {
             Game g = service.createGame(existingUserAuth, "gameName");
             service.joinGame(existingUserAuth, ChessGame.TeamColor.BLACK, g.gameID());
-            Collection<Game> games = database.getGames();
+            Collection<Game> games = sqldao.getAllGamesSQL();
             Assertions.assertEquals(1, games.size());
             var databaseGame = games.toArray()[0];
             Assertions.assertInstanceOf(Game.class, databaseGame);
@@ -254,9 +260,9 @@ public class MyAPITests {
 
             service.delete();
 
-            Assertions.assertEquals(0, database.authCollection.size());
-            Assertions.assertEquals(0, database.gameCollection.size());
-            Assertions.assertEquals(0, database.userCollection.size());
+            Assertions.assertEquals(0, sqldao.getAllAuthsSQL().size());
+            Assertions.assertEquals(0, sqldao.getAllUsersSQL().size());
+            Assertions.assertEquals(0, sqldao.getAllGamesSQL().size());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }

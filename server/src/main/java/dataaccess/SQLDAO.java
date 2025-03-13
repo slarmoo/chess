@@ -101,6 +101,12 @@ public class SQLDAO {
         Collection<User> users = this.getAllUsersSQL();
         if(users.contains(user)) {
             return user;
+        } else {
+            for(User u : users) {
+                if(u.username().equals(user.username()) && BCrypt.checkpw(user.password(), u.password())) {
+                    return user;
+                }
+            }
         }
         return null;
     }
@@ -183,7 +189,7 @@ public class SQLDAO {
     }
 
     public void updateGameSQL(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame) {
-        var statement = "DELETE FROM auth WHERE gameName=?";
+        var statement = "DELETE FROM game WHERE gameName=?";
         try {
             executeUpdate(statement, gameName);
             Game updatedGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);

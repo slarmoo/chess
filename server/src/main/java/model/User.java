@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 

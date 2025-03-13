@@ -25,24 +25,15 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
-
         Spark.delete("/db", this::deleteAll);
-
         Spark.post("/game", this::createGame);
-
         Spark.post("/session", this::loginUser);
-
         Spark.delete("/session", this::logoutUser);
-
         Spark.get("/game", this::getGames);
-
         Spark.put("/game", this::joinGame);
-
         Spark.exception(exception.ResponseException.class, this::exceptionHandler);
 
-
         Spark.awaitInitialization();
-
         return this.port();
     }
 
@@ -53,6 +44,7 @@ public class Server {
 
     public void stop() {
         Spark.stop();
+        Spark.awaitStop();
     }
 
     private void exceptionHandler(exception.ResponseException ex, Request req, Response res) {
