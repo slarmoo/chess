@@ -6,11 +6,6 @@ import model.User;
 import java.util.UUID;
 
 public class MemoryUserDAO extends SQLDAO implements UserDAO {
-    private final Database database;
-
-    public MemoryUserDAO(Database database) {
-        this.database = database;
-    }
 
     public Auth addUser(User user) throws DataAccessException {
         if(getUser(user) == null) {
@@ -31,23 +26,18 @@ public class MemoryUserDAO extends SQLDAO implements UserDAO {
     }
 
     public void addAuth(Auth auth) {
-        database.addAuth(auth);
+        this.addAuthSQL(auth);
     }
 
     @Override
     public User getUser(User user) {
-        User u = database.findUser(user);
-        if(u != null) {
-            return u;
-        } else {
-            return null;
-        }
+        return this.getUserSQL(user);
     }
 
     @Override
     public boolean deleteAuth(Auth auth) {
         if(validateAuth(auth)) {
-            database.deleteAuth(auth);
+            this.deleteAuthSQL(auth);
             return true;
         }
         return false;
@@ -55,6 +45,6 @@ public class MemoryUserDAO extends SQLDAO implements UserDAO {
 
     @Override
     public boolean validateAuth(Auth auth) {
-        return database.validateAuth(auth);
+        return this.validateAuthSQL(auth);
     }
 }

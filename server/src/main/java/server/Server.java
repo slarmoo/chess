@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class Server {
     private final Database database = new Database();
-    private final service.Service service = new service.Service(new MemoryUserDAO(database), new MemoryGameDAO(database));
+    private final service.Service service = new service.Service(new MemoryUserDAO(), new MemoryGameDAO(database));
 
     public Server() {
     }

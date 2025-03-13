@@ -26,7 +26,7 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
 
     @Override
     public void deleteAll() {
-        database.delete();
+        this.deleteAllSQL();
     }
 
     @Override
