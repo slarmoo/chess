@@ -1,7 +1,6 @@
 package model;
 
 import com.google.gson.Gson;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -16,7 +15,9 @@ public record User (String username, String password, String email) {
         if (!(o instanceof User(String username1, String password1, String email1))) {
             return false;
         }
-//      We don't care about the equivalence of emails
-        return /*Objects.equals(email, email1) &&*/ Objects.equals(username, username1) && Objects.equals(password, password1);
+        if(email1 != null && email != null && !email1.equals(email)) {
+            return false;
+        }
+        return Objects.equals(username, username1) && Objects.equals(password, password1);
     }
 }

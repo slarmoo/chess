@@ -226,7 +226,7 @@ public class SQLDAO {
     }
 
     //borrowed from petshop
-    private int executeUpdate(String statement, Object... params) throws ResponseException {
+    private void executeUpdate(String statement, Object... params) throws ResponseException {
         try {
             var conn = DatabaseManager.getConnection();
             var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS);
@@ -246,10 +246,9 @@ public class SQLDAO {
 
             var rs = ps.getGeneratedKeys();
             if (rs.next()) {
-                return rs.getInt(1);
+                rs.getInt(1);
             }
 
-            return 0;
         } catch (Exception e) {
             throw new ResponseException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
