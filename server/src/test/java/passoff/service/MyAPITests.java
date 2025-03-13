@@ -1,4 +1,4 @@
-package service;
+package passoff.service;
 
 import chess.ChessGame;
 import dataaccess.MemoryGameDAO;
@@ -11,7 +11,7 @@ import java.util.*;
 import model.Auth;
 import model.User;
 import model.Game;
-import org.mindrot.jbcrypt.BCrypt;
+import service.Service;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {
@@ -199,7 +199,7 @@ public class MyAPITests {
             Assertions.assertEquals(g.gameID(), g2.gameID());
             Assertions.assertEquals(g.gameName(), g2.gameName());
             Assertions.assertEquals(existingUserAuth.username(), g2.blackUsername());
-            Assertions.assertEquals(null, g2.whiteUsername());
+            Assertions.assertNull(g2.whiteUsername());
         } catch (DataAccessException e) {
             Assertions.fail(e.getMessage());
         }
