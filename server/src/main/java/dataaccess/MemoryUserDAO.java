@@ -25,17 +25,17 @@ public class MemoryUserDAO extends SQLDAO implements UserDAO {
         return new Auth(user.username(), UUID.randomUUID() + "");
     }
 
-    public void addAuth(Auth auth) {
+    public void addAuth(Auth auth) throws DataAccessException {
         this.addAuthSQL(auth);
     }
 
     @Override
-    public User getUser(User user) {
+    public User getUser(User user) throws DataAccessException {
         return this.getUserSQL(user);
     }
 
     @Override
-    public boolean deleteAuth(Auth auth) {
+    public boolean deleteAuth(Auth auth) throws DataAccessException {
         if(validateAuth(auth)) {
             this.deleteAuthSQL(auth);
             return true;
@@ -44,7 +44,7 @@ public class MemoryUserDAO extends SQLDAO implements UserDAO {
     }
 
     @Override
-    public boolean validateAuth(Auth auth) {
+    public boolean validateAuth(Auth auth) throws DataAccessException {
         return this.validateAuthSQL(auth);
     }
 }

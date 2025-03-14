@@ -28,7 +28,11 @@ public class MyDatabaseTests {
 
     @BeforeEach
     public void setup() {
-        GAME_DAO.deleteAll();
+        try {
+            GAME_DAO.deleteAll();
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @AfterEach
@@ -39,12 +43,16 @@ public class MyDatabaseTests {
     @Order(1)
     @DisplayName("Database empty")
     public void checkDatabase() {
-        Collection<User> users = SQLDAO.getAllUsersSQL();
-        Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
-        Collection<Game> games = GAME_DAO.findAll();
-        Assertions.assertEquals(0, users.size());
-        Assertions.assertEquals(0, auths.size());
-        Assertions.assertEquals(0, games.size());
+        try {
+            Collection<User> users = SQLDAO.getAllUsersSQL();
+            Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
+            Collection<Game> games = GAME_DAO.findAll();
+            Assertions.assertEquals(0, users.size());
+            Assertions.assertEquals(0, auths.size());
+            Assertions.assertEquals(0, games.size());
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
@@ -75,6 +83,18 @@ public class MyDatabaseTests {
     }
 
     @Test
+    @Order(2)
+    @DisplayName("Add user Fail")
+    public void addUsersF() {
+        try {
+            this.auth1 = USER_DAO.addUser(USER_1);
+            USER_DAO.addUser(USER_1);
+        } catch (Exception e) {
+            Assertions.assertEquals("Error: User already exists", e.getMessage());
+        }
+    }
+
+    @Test
     @Order(3)
     @DisplayName("Database still empty")
     public void checkDatabaseAgain() {
@@ -85,17 +105,39 @@ public class MyDatabaseTests {
     @Order(4)
     @DisplayName("logout Users")
     public void logoutUsers() {
-        this.addUsers();
-        USER_DAO.deleteAuth(this.auth1);
-        Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
-        Assertions.assertEquals(1, auths.size());
-        Assertions.assertTrue(auths.contains(this.auth2));
-        Assertions.assertFalse(auths.contains(this.auth1));
-        USER_DAO.deleteAuth(this.auth2);
-        auths = SQLDAO.getAllAuthsSQL();
-        Assertions.assertEquals(0, auths.size());
-        Assertions.assertFalse(auths.contains(this.auth1));
-        Assertions.assertFalse(auths.contains(this.auth2));
+        try {
+            this.addUsers();
+            USER_DAO.deleteAuth(this.auth1);
+            Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
+            Assertions.assertEquals(1, auths.size());
+            Assertions.assertTrue(auths.contains(this.auth2));
+            Assertions.assertFalse(auths.contains(this.auth1));
+            USER_DAO.deleteAuth(this.auth2);
+            auths = SQLDAO.getAllAuthsSQL();
+            Assertions.assertEquals(0, auths.size());
+            Assertions.assertFalse(auths.contains(this.auth1));
+            Assertions.assertFalse(auths.contains(this.auth2));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("logout Users Fail")
+    public void logoutUsersF() {
+        try {
+            this.addUsers();
+            USER_DAO.deleteAuth(this.auth1);
+            Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
+            Assertions.assertEquals(1, auths.size());
+            Assertions.assertTrue(auths.contains(this.auth2));
+            Assertions.assertFalse(auths.contains(this.auth1));
+
+            Assertions.assertFalse(USER_DAO.deleteAuth(this.auth1));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
@@ -111,6 +153,17 @@ public class MyDatabaseTests {
             Assertions.assertTrue(games.contains(this.game2));
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("add games Fail")
+    public void addGamesF() {
+        try {
+            this.game2 = GAME_DAO.addGame(new Auth("", ""), "game3");
+        } catch (Exception e) {
+            Assertions.assertEquals("Error: Unauthorized", e.getMessage());
         }
     }
 
@@ -156,6 +209,29 @@ public class MyDatabaseTests {
             Assertions.assertEquals(2, games.size());
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("join game Fail")
+    public void joinGameF() {
+        this.addGames();
+        try {
+            GAME_DAO.joinGame(this.auth1, ChessGame.TeamColor.WHITE, -1);
+        } catch (Exception e) {
+            Assertions.assertEquals("Error: Bad Request", e.getMessage());
+        }
+        try {
+            GAME_DAO.joinGame(new Auth ("", ""), ChessGame.TeamColor.BLACK, this.game1.gameID());
+        } catch (Exception e) {
+            Assertions.assertEquals("Error: Unauthorized", e.getMessage());
+        }
+        try {
+            GAME_DAO.joinGame(this.auth1, ChessGame.TeamColor.BLACK, this.game1.gameID());
+            GAME_DAO.joinGame(this.auth2, ChessGame.TeamColor.BLACK, this.game1.gameID());
+        } catch (Exception e) {
+            Assertions.assertEquals("Error: Forbidden", e.getMessage());
         }
     }
 

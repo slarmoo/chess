@@ -8,9 +8,9 @@ import java.util.Collection;
 public interface GameDAO {
     Game addGame(Auth auth, String name) throws DataAccessException;
 
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 
-    Collection<Game> findAll();
+    Collection<Game> findAll() throws DataAccessException;
 
     void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException;
 }

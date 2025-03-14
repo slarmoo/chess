@@ -50,9 +50,13 @@ public class MyAPITests {
     @Order(1)
     @DisplayName("Database has existing user")
     public void checkDatabase() {
-        User sqluser = sqldao.getUserSQL(existingUser);
-        Assertions.assertEquals(existingUser, sqluser);
-        Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(existingUserAuth));
+        try {
+            User sqluser = sqldao.getUserSQL(existingUser);
+            Assertions.assertEquals(existingUser, sqluser);
+            Assertions.assertTrue(sqldao.getAllAuthsSQL().contains(existingUserAuth));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
@@ -85,9 +89,13 @@ public class MyAPITests {
     @Order(3)
     @DisplayName("Successful Logout")
     public void logout() {
-        service.logout(existingUserAuth);
-        Assertions.assertEquals(existingUser, sqldao.getUserSQL(existingUser));
-        Assertions.assertFalse(sqldao.getAllAuthsSQL().contains(existingUserAuth));
+        try {
+            service.logout(existingUserAuth);
+            Assertions.assertEquals(existingUser, sqldao.getUserSQL(existingUser));
+            Assertions.assertFalse(sqldao.getAllAuthsSQL().contains(existingUserAuth));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test

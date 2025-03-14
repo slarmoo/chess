@@ -20,12 +20,12 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteAll() throws DataAccessException {
         this.deleteAllSQL();
     }
 
     @Override
-    public Collection<Game> findAll() {
+    public Collection<Game> findAll() throws DataAccessException {
         return this.getAllGamesSQL();
     }
 

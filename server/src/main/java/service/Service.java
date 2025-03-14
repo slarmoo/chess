@@ -35,11 +35,11 @@ public class Service {
         }
     }
 
-    public boolean logout(Auth auth) {
+    public boolean logout(Auth auth) throws DataAccessException {
         return userdao.deleteAuth(auth);
     }
 
-    public void delete() {
+    public void delete() throws DataAccessException {
         gamedao.deleteAll();
     }
 

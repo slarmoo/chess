@@ -50,10 +50,14 @@ public class Server {
         res.body(ex.toJson());
     }
 
-    private Object deleteAll(Request request, Response response) {
-        service.delete();
-        response.status(200);
-        return "";
+    private Object deleteAll(Request request, Response response) throws exception.ResponseException {
+        try {
+            service.delete();
+            response.status(200);
+            return "";
+        } catch (Exception e) {
+            throw new exception.ResponseException(403, e.getMessage());
+        }
     }
 
     private Object createUser(Request request, Response response) throws exception.ResponseException {
@@ -97,10 +101,14 @@ public class Server {
     public Object logoutUser(Request request, Response response) throws exception.ResponseException {
         var a = request.headers("authorization");
         var auth = new Auth("", a);
-        boolean b = service.logout(auth);
-        if(b) {
-            response.status(200);
-        } else {
+        try {
+            boolean b = service.logout(auth);
+            if(b) {
+                response.status(200);
+            } else {
+                throw new exception.ResponseException(401, "Error: Unauthorized");
+            }
+        } catch (Exception e) {
             throw new exception.ResponseException(401, "Error: Unauthorized");
         }
         return "{}";

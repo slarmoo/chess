@@ -68,25 +68,25 @@ public class SQLDAO {
         executeUpdate(statement, auth.username(), auth.authToken());
     }
 
-    public void addAuthSQL(Auth auth) {
+    public void addAuthSQL(Auth auth) throws DataAccessException {
         String statement = "insert into auth (username, authToken) values (?, ?)";
         try {
             executeUpdate(statement, auth.username(), auth.authToken());
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public void addGameSQL(Game game) {
+    public void addGameSQL(Game game) throws DataAccessException {
         String statement = "insert into game (id, whiteUsername, blackUsername, gameName, chessGame) values (?, ?, ?, ?, ?)";
         try {
             executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public Collection<User> getAllUsersSQL() {
+    public Collection<User> getAllUsersSQL() throws DataAccessException {
         var users = new ArrayList<User>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -97,12 +97,12 @@ public class SQLDAO {
                 users.add(parseUser(response));
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
         return users;
     }
 
-    public User getUserSQL(User user) {
+    public User getUserSQL(User user) throws DataAccessException {
         Collection<User> users = this.getAllUsersSQL();
         if(users.contains(user)) {
             return user;
@@ -116,7 +116,7 @@ public class SQLDAO {
         return null;
     }
 
-    public Collection<Auth> getAllAuthsSQL() {
+    public Collection<Auth> getAllAuthsSQL() throws DataAccessException {
         var auths = new ArrayList<Auth>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -127,25 +127,25 @@ public class SQLDAO {
                 auths.add(parseAuth(response));
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
         return auths;
     }
 
-    public boolean validateAuthSQL(Auth auth) {
+    public boolean validateAuthSQL(Auth auth) throws DataAccessException {
         return this.getAllAuthsSQL().contains(auth);
     }
 
-    public void deleteAuthSQL(Auth auth) {
+    public void deleteAuthSQL(Auth auth) throws DataAccessException {
         var statement = "DELETE FROM auth WHERE authToken=?";
         try {
             executeUpdate(statement, auth.authToken());
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public Collection<Game> getAllGamesSQL() {
+    public Collection<Game> getAllGamesSQL() throws DataAccessException {
         var games = new ArrayList<Game>();
         try {
             var conn = DatabaseManager.getConnection();
@@ -156,12 +156,12 @@ public class SQLDAO {
                 games.add(parseGame(response));
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
         return games;
     }
 
-    public Game getGameByIDSQL(int id) {
+    public Game getGameByIDSQL(int id) throws DataAccessException {
         try {
             var conn = DatabaseManager.getConnection();
             String statement = "select id, whiteUsername, blackUsername, gameName, chessGame from game where id=?";
@@ -172,12 +172,12 @@ public class SQLDAO {
                 return parseGame(response);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
         return null;
     }
 
-    public String getUsernameByAuthSQL(Auth auth) {
+    public String getUsernameByAuthSQL(Auth auth) throws DataAccessException {
         try {
             var conn = DatabaseManager.getConnection();
             String statement = "select username, authToken from auth where authToken=?";
@@ -188,23 +188,23 @@ public class SQLDAO {
                 return parseAuth(response).username();
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
         return null;
     }
 
-    public void updateGameSQL(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame) {
+    public void updateGameSQL(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame) throws DataAccessException {
         var statement = "DELETE FROM game WHERE gameName=?";
         try {
             executeUpdate(statement, gameName);
             Game updatedGame = new Game(gameID, whiteUsername, blackUsername, gameName, chessGame);
             this.addGameSQL(updatedGame);
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public void deleteAllSQL() {
+    public void deleteAllSQL() throws DataAccessException {
         try {
             var statement = "truncate user";
             executeUpdate(statement);
@@ -213,7 +213,7 @@ public class SQLDAO {
             statement = "truncate game";
             executeUpdate(statement);
         } catch(Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 

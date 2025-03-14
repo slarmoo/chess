@@ -7,11 +7,11 @@ public interface UserDAO {
 
     Auth createAuth(User user);
 
-    User getUser(User user);
+    User getUser(User user) throws DataAccessException;
 
-    boolean deleteAuth(Auth auth);
+    boolean deleteAuth(Auth auth) throws DataAccessException;
 
-    void addAuth(Auth auth);
+    void addAuth(Auth auth) throws DataAccessException;
 
-    boolean validateAuth(Auth auth);
+    boolean validateAuth(Auth auth) throws DataAccessException;
 }
