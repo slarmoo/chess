@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -27,7 +28,7 @@ public class MyDatabaseTests {
 
     @BeforeEach
     public void setup() {
-        SQLDAO.deleteAllSQL();
+        GAME_DAO.deleteAll();
     }
 
     @AfterEach
@@ -40,7 +41,7 @@ public class MyDatabaseTests {
     public void checkDatabase() {
         Collection<User> users = SQLDAO.getAllUsersSQL();
         Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
-        Collection<Game> games = SQLDAO.getAllGamesSQL();
+        Collection<Game> games = GAME_DAO.findAll();
         Assertions.assertEquals(0, users.size());
         Assertions.assertEquals(0, auths.size());
         Assertions.assertEquals(0, games.size());
@@ -51,10 +52,8 @@ public class MyDatabaseTests {
     @DisplayName("Add user")
     public void addUsers() {
         try {
-            this.auth1 = USER_DAO.createAuth(USER_1);
-            this.auth2 = USER_DAO.createAuth(USER_2);
-            SQLDAO.addUserSQL(USER_1, this.auth1);
-            SQLDAO.addUserSQL(USER_2, this.auth2);
+            this.auth1 = USER_DAO.addUser(USER_1);
+            this.auth2 = USER_DAO.addUser(USER_2);
             Collection<User> users = SQLDAO.getAllUsersSQL();
             Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
             Assertions.assertEquals(2, users.size());
@@ -87,12 +86,12 @@ public class MyDatabaseTests {
     @DisplayName("logout Users")
     public void logoutUsers() {
         this.addUsers();
-        SQLDAO.deleteAuthSQL(this.auth1);
+        USER_DAO.deleteAuth(this.auth1);
         Collection<Auth> auths = SQLDAO.getAllAuthsSQL();
         Assertions.assertEquals(1, auths.size());
         Assertions.assertTrue(auths.contains(this.auth2));
         Assertions.assertFalse(auths.contains(this.auth1));
-        SQLDAO.deleteAuthSQL(this.auth2);
+        USER_DAO.deleteAuth(this.auth2);
         auths = SQLDAO.getAllAuthsSQL();
         Assertions.assertEquals(0, auths.size());
         Assertions.assertFalse(auths.contains(this.auth1));
@@ -107,7 +106,7 @@ public class MyDatabaseTests {
         try {
             this.game1 = GAME_DAO.addGame(this.auth1, "game1");
             this.game2 = GAME_DAO.addGame(this.auth2, "game2");
-            Collection<Game> games = SQLDAO.getAllGamesSQL();
+            Collection<Game> games = GAME_DAO.findAll();
             Assertions.assertTrue(games.contains(this.game1));
             Assertions.assertTrue(games.contains(this.game2));
         } catch (Exception e) {
@@ -138,6 +137,23 @@ public class MyDatabaseTests {
             Assertions.assertEquals(USER_1.username(), SQLDAO.getUsernameByAuthSQL(this.auth1));
             Assertions.assertEquals(USER_2.username(), SQLDAO.getUsernameByAuthSQL(this.auth2));
             Assertions.assertNull(SQLDAO.getUsernameByAuthSQL(new Auth("", "")));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("join game")
+    public void joinGame() {
+        this.addGames();
+        try {
+            GAME_DAO.joinGame(this.auth1, ChessGame.TeamColor.WHITE, this.game1.gameID());
+            GAME_DAO.joinGame(this.auth2, ChessGame.TeamColor.BLACK, this.game1.gameID());
+            Collection<Game> games = GAME_DAO.findAll();
+            Assertions.assertTrue(games.contains(new Game(this.game1.gameID(), this.auth1.username(), this.auth2.username(), this.game1.gameName(), this.game1.game())));
+            Assertions.assertTrue(games.contains(game2));
+            Assertions.assertEquals(2, games.size());
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }
