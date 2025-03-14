@@ -193,7 +193,8 @@ public class SQLDAO {
         return null;
     }
 
-    public void updateGameSQL(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame chessGame) throws DataAccessException {
+    public void updateGameSQL(int gameID, String gameName, String whiteUsername,
+                              String blackUsername, ChessGame chessGame) throws DataAccessException {
         var statement = "DELETE FROM game WHERE gameName=?";
         try {
             executeUpdate(statement, gameName);

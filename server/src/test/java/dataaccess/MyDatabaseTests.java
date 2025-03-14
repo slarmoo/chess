@@ -204,7 +204,8 @@ public class MyDatabaseTests {
             GAME_DAO.joinGame(this.auth1, ChessGame.TeamColor.WHITE, this.game1.gameID());
             GAME_DAO.joinGame(this.auth2, ChessGame.TeamColor.BLACK, this.game1.gameID());
             Collection<Game> games = GAME_DAO.findAll();
-            Assertions.assertTrue(games.contains(new Game(this.game1.gameID(), this.auth1.username(), this.auth2.username(), this.game1.gameName(), this.game1.game())));
+            Assertions.assertTrue(games.contains(new Game(this.game1.gameID(), this.auth1.username(),
+                    this.auth2.username(), this.game1.gameName(), this.game1.game())));
             Assertions.assertTrue(games.contains(game2));
             Assertions.assertEquals(2, games.size());
         } catch (Exception e) {
