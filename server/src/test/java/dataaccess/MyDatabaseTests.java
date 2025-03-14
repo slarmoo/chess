@@ -1,6 +1,5 @@
-package passoff.dataaccess;
+package dataaccess;
 
-import dataaccess.*;
 import model.Auth;
 import model.Game;
 import model.User;

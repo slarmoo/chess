@@ -15,6 +15,10 @@ import static java.sql.Types.NULL;
 
 public class SQLDAO {
 
+    public SQLDAO() {
+        SQLDAO.configureDatabase();
+    }
+
     private static final String[] CREATE_STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
@@ -41,9 +45,10 @@ public class SQLDAO {
             """
     };
 
-    static {
-        try (var conn = DatabaseManager.getConnection()) {
+    public static void configureDatabase() {
+        try {
             DatabaseManager.createDatabase();
+            var conn = DatabaseManager.getConnection();
             for (var statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();

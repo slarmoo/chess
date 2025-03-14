@@ -1,4 +1,4 @@
-package passoff.service;
+package service;
 
 import chess.ChessGame;
 import dataaccess.MemoryGameDAO;
@@ -11,7 +11,6 @@ import java.util.*;
 import model.Auth;
 import model.User;
 import model.Game;
-import service.Service;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyAPITests {

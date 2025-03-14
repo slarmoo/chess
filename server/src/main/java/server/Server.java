@@ -9,8 +9,6 @@ import model.*;
 import java.util.Collection;
 import java.util.Map;
 
-//import java.util.Map;
-
 public class Server {
     private final service.Service service = new service.Service(new MemoryUserDAO(), new MemoryGameDAO());
 
