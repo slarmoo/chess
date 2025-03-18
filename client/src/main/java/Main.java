@@ -8,6 +8,6 @@ public class Main {
         System.out.println("♕ 240 Chess Client: " + piece);
         var board = new ChessBoard();
         board.resetBoard();
-        ChessBoardUI.printBoard(board);
+        ChessBoardUI.printBoard(board, false);
     }
 }

@@ -8,28 +8,40 @@ public class ChessBoardUI {
     private static final String blackPieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
     private static final String whitePieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
 
-    public static void printBoard(ChessBoard board) {
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                ChessPosition pos = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(pos);
-                String text = getString(piece);
-                if(piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    System.out.print(blackPieceColor);
-                } else {
-                    System.out.print(whitePieceColor);
+    public static void printBoard(ChessBoard board, boolean isUpsidedown) {
+        final int boardStart = isUpsidedown ? 8 : 1;
+        final int boardEnd = isUpsidedown ? 1 : 8;
+        if(isUpsidedown) {
+            for(int i = 8; i >= 1; i--) {
+                for(int j = 8; j >= 1; j--) {
+                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
                 }
-                if((i+j)%2==0) {
-                    System.out.print(blackBGColor);
-                } else {
-                    System.out.print(whiteBGColor);
-                }
-                System.out.print(EscapeSequences.SET_TEXT_CONCEALED);
-                System.out.print(text);
+                System.out.print(EscapeSequences.RESET_BG_COLOR);
+                System.out.print("\n");
             }
-            System.out.print(EscapeSequences.RESET_BG_COLOR);
-            System.out.print("\n");
+        } else {
+            for(int i = 1; i <= 8; i++) {
+                for(int j = 1; j <= 8; j++) {
+                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
+                }
+                System.out.print(EscapeSequences.RESET_BG_COLOR);
+                System.out.print("\n");
+            }
         }
+    }
+
+    private static void printPiece(int i, int j, ChessPiece piece) {
+        if(piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            System.out.print(blackPieceColor);
+        } else {
+            System.out.print(whitePieceColor);
+        }
+        if((i+j)%2==0) {
+            System.out.print(blackBGColor);
+        } else {
+            System.out.print(whiteBGColor);
+        }
+        System.out.print(getString(piece));
     }
 
     private static String getString(ChessPiece piece) {
