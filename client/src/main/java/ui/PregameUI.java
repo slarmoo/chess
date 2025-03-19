@@ -1,4 +1,7 @@
 package ui;
+import client.Client;
+import model.Auth;
+
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -46,7 +49,15 @@ public class PregameUI {
                         String username = command[1];
                         String password = command[2];
                         String email = command[3];
-
+                        Object obj = Client.register(username, password, email);
+                        if(obj instanceof Auth auth) {
+                            System.out.print(textColorDefault);
+                            System.out.print("User successfully created! \n");
+                        } else {
+                            System.out.print(textColorError);
+                            System.out.print("Error creating user: ");
+                            System.out.println(obj);
+                        }
                     }
                     break;
                 }
