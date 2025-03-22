@@ -11,6 +11,7 @@ public class PregameUI {
     private static final String textColorError = EscapeSequences.SET_TEXT_COLOR_RED;
 
     private String state;
+    private Auth auth;
 
     public PregameUI() {
         this.state = "pregame";
@@ -53,6 +54,8 @@ public class PregameUI {
                         if(obj instanceof Auth auth) {
                             System.out.print(textColorDefault);
                             System.out.print("User successfully created! \n");
+                            this.state = "postlogin";
+                            this.auth = auth;
                         } else {
                             System.out.print(textColorError);
                             System.out.print("Error creating user: ");
@@ -66,7 +69,17 @@ public class PregameUI {
                     if(checkLength(command, 3)) {
                         String username = command[1];
                         String password = command[2];
-
+                        Object obj = Client.login(username, password);
+                        if(obj instanceof Auth auth) {
+                            System.out.print(textColorDefault);
+                            System.out.print("Successfully Logged In! \n");
+                            this.state = "postlogin";
+                            this.auth = auth;
+                        } else {
+                            System.out.print(textColorError);
+                            System.out.print("Error logging in: ");
+                            System.out.println(obj);
+                        }
                     }
                     break;
                 }
@@ -83,18 +96,19 @@ public class PregameUI {
                     break;
                 }
             }
-
-//            int result = 0;
-//            for (var number : numbers) {
-//                result += Integer.parseInt(number);
-//            }
-//            var equation = String.join(" + ", numbers);
-//            System.out.printf("%s = %d%n", equation, result);
         }
     }
 
+    public Auth getAuth() {
+        return this.auth;
+    }
+
+    public String getState() {
+        return this.state;
+    }
+
     private boolean checkLength(String[] command, int length) {
-        if(command.length < length) {
+        if (command.length < length) {
             System.out.print(textColorError);
             System.out.print("not enough arguments \n");
             return false;
