@@ -45,21 +45,8 @@ public class Client {
 
     public static Object getGames(Auth auth) {
         try {
-            record listGamesResponse(Game[] games) {
-            }
-            URI uri = new URI(urlBase + "game");
-
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("GET");
-            http.addRequestProperty("Content-Type", "application/json");
-            if(auth != null) {
-                http.addRequestProperty("authorization", auth.authToken());
-            }
-            http.connect();
-            InputStream in = http.getInputStream();
-            var response = new Gson().fromJson(new InputStreamReader(in), listGamesResponse.class);
-            if(response instanceof listGamesResponse gamesResponse) {
-                var games = gamesResponse.games();
+            var games = grabGames(auth);
+            if(games != null) {
                 var result = new StringBuilder();
                 for (Game game : games) {
                     result.append(Client.parseGame(game)).append('\n');
@@ -70,6 +57,28 @@ public class Client {
             return e.getMessage();
         }
         return "[none]";
+    }
+
+    public static Object joinGame(int id, ChessGame.TeamColor color, Auth auth) {
+        try {
+            writeObjectToPath(new JoinGameRequest(color.name(), id),
+                    "game", "PUT", Auth.class, auth);
+            return grabGameWithID(id, auth);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    private static Game grabGameWithID(int id, Auth auth) throws Exception {
+        var games = grabGames(auth);
+        if(games != null) {
+            for (Game game : games) {
+                if(game.gameID() == id) {
+                    return game;
+                }
+            }
+        }
+        return null;
     }
 
     private static <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {
@@ -110,6 +119,27 @@ public class Client {
 
 
         return returnObj;
+    }
+
+    private static Game[] grabGames(Auth auth) throws Exception {
+        record listGamesResponse(Game[] games) {
+        }
+        URI uri = new URI(urlBase + "game");
+
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("GET");
+        http.addRequestProperty("Content-Type", "application/json");
+        if(auth != null) {
+            http.addRequestProperty("authorization", auth.authToken());
+        }
+        http.connect();
+        InputStream in = http.getInputStream();
+        var response = new Gson().fromJson(new InputStreamReader(in), listGamesResponse.class);
+        if(response instanceof listGamesResponse gamesResponse) {
+            return gamesResponse.games();
+        } else {
+            return null;
+        }
     }
 
     private static String parseGame(Game game) {

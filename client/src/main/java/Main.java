@@ -12,11 +12,11 @@ public class Main {
         var pregame = new PregameUI();
         State state = State.pregame;
         pregame.start(state);
+        var postlogin = new PostloginUI(pregame.getAuth());
         state = pregame.getState();
         while(!Objects.equals(state, State.game) && !Objects.equals(state, State.stop)) {
             switch (state) {
                 case State.postlogin: {
-                    var postlogin = new PostloginUI(pregame.getAuth());
                     postlogin.start(state);
                     state = postlogin.getState();
                     break;
@@ -28,6 +28,11 @@ public class Main {
                 }
             }
         }
-        ChessBoardUI.printBoard(game.getBoard(), false);
+        boolean isRightSideUp = true;
+        if(postlogin.getGame() != null) {
+            game = postlogin.getGame().game();
+            isRightSideUp = Objects.equals(postlogin.getGame().whiteUsername(), pregame.getAuth().username());
+        }
+        ChessBoardUI.printBoard(game.getBoard(), isRightSideUp);
     }
 }

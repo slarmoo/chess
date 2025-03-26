@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.Client;
 import model.*;
 
@@ -14,7 +15,7 @@ public class PostloginUI {
 
     private State state;
     private Auth auth;
-    private Game game;
+    private Game game = null;
 
     public PostloginUI(Auth auth) {
         this.state = State.postlogin;
@@ -72,7 +73,7 @@ public class PostloginUI {
                         if (obj instanceof Game game) {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
-                            this.game = game;
+//                            this.game = game;
 //                            this.state = State.game;
                         } else {
                             System.out.print(textColorError);
@@ -105,6 +106,43 @@ public class PostloginUI {
                         System.out.print(textColorAlt);
                         System.out.print(obj);
                     }
+                    break;
+                }
+                case "join":
+                case "Join": {
+                    if(checkLength(command, 3)) {
+                        int id;
+                        try {
+                            id = Integer.parseInt(command[1]);
+                        } catch (NumberFormatException e) {
+                            System.out.print(textColorError);
+                            System.out.println("Not a number. Type Help for help");
+                            break;
+                        }
+                        String colorString = command[2].toLowerCase();
+                        ChessGame.TeamColor color = colorString.equals("black") ? ChessGame.TeamColor.BLACK :
+                                colorString.equals("white") ? ChessGame.TeamColor.WHITE : null;
+                        if(color == null) {
+                            System.out.print(textColorError);
+                            System.out.println("Unrecognized color. Type Help for help");
+                            break;
+                        }
+                        Object obj = Client.joinGame(id, color, auth);
+                        if (obj instanceof Game game) {
+                            System.out.print(textColorDefault);
+                            System.out.print("joined game \n");
+                            this.state = State.game;
+                            this.game = game;
+                        } else {
+                            System.out.print(textColorError);
+                            System.out.print("Error trying to join game " + id + ": ");
+                            System.out.println(obj);
+                        }
+                    }
+                    break;
+                }
+                case "spectate":
+                case "Spectate": {
                     break;
                 }
                 case "quit":
