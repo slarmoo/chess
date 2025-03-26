@@ -48,8 +48,10 @@ public class Client {
             var games = grabGames(auth);
             if(games != null) {
                 var result = new StringBuilder();
+                int count = 1;
                 for (Game game : games) {
-                    result.append(Client.parseGame(game)).append('\n');
+                    result.append(Client.parseGame(game, count)).append('\n');
+                    count++;
                 }
                 return result;
             }
@@ -61,9 +63,10 @@ public class Client {
 
     public static Object joinGame(int id, ChessGame.TeamColor color, Auth auth) {
         try {
-            writeObjectToPath(new JoinGameRequest(color.name(), id),
+            Game game = grabGameWithID(id, auth);
+            writeObjectToPath(new JoinGameRequest(color.name(), game.gameID()),
                     "game", "PUT", Auth.class, auth);
-            return grabGameWithID(id, auth);
+            return game;
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -72,10 +75,12 @@ public class Client {
     private static Game grabGameWithID(int id, Auth auth) throws Exception {
         var games = grabGames(auth);
         if(games != null) {
+            int count = 1;
             for (Game game : games) {
-                if(game.gameID() == id) {
+                if(count == id) {
                     return game;
                 }
+                count++;
             }
         }
         return null;
@@ -142,10 +147,10 @@ public class Client {
         }
     }
 
-    private static String parseGame(Game game) {
+    private static String parseGame(Game game, int fakeID) {
         var result = new StringBuilder();
         var name = game.gameName();
-        var id = game.gameID();
+        var id = fakeID;
         var blackPlayer = game.blackUsername();
         var whitePlayer = game.whiteUsername();
         result.append("Game: ").append(name);
