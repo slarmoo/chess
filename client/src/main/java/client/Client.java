@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 
@@ -35,17 +36,46 @@ public class Client {
 
     public static Object createGame(String gameName, Auth auth) {
         try {
-            return writeObjectToPath(gameName,"game", "POST", Game.class, auth);
+            return writeObjectToPath(new Game(0, "", "", gameName, new ChessGame()),
+                    "game", "POST", Game.class, auth);
         } catch (Exception e) {
             return e.getMessage();
         }
     }
 
-    private static Object writeObjectToPath(Object obj, String path, String requestMethod, Class classType, Auth auth) throws Exception {
+    public static Object getGames(Auth auth) {
+        try {
+            record listGamesResponse(Game[] games) {
+            }
+            URI uri = new URI(urlBase + "game");
+
+            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+            http.setRequestMethod("GET");
+            http.addRequestProperty("Content-Type", "application/json");
+            if(auth != null) {
+                http.addRequestProperty("authorization", auth.authToken());
+            }
+            http.connect();
+            InputStream in = http.getInputStream();
+            var response = new Gson().fromJson(new InputStreamReader(in), listGamesResponse.class);
+            if(response instanceof listGamesResponse gamesResponse) {
+                var games = gamesResponse.games();
+                var result = new StringBuilder();
+                for (Game game : games) {
+                    result.append(Client.parseGame(game)).append('\n');
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return "[none]";
+    }
+
+    private static <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {
         URI uri = new URI(urlBase + path);
 
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-//        System.out.println(requestMethod);
         http.setRequestMethod(requestMethod);
 
         // Specify that we are going to write out data
@@ -54,16 +84,12 @@ public class Client {
         // Write out a header
         http.addRequestProperty("Content-Type", "application/json");
         if(auth != null) {
-//            System.out.println("writing auth");
             http.addRequestProperty("authorization", auth.authToken());
-//            System.out.println(auth);
         }
 
         // Write out the body
         var outputStream = http.getOutputStream();
         if(obj != null) {
-//            System.out.println("writing object");
-//            System.out.println(obj);
             outputStream.write(new Gson().toJson(obj).getBytes());
         }
 
@@ -84,5 +110,18 @@ public class Client {
 
 
         return returnObj;
+    }
+
+    private static String parseGame(Game game) {
+        var result = new StringBuilder();
+        var name = game.gameName();
+        var id = game.gameID();
+        var blackPlayer = game.blackUsername();
+        var whitePlayer = game.whiteUsername();
+        result.append("Game: ").append(name);
+        result.append(" \t| ID: ").append(id);
+        result.append(" \t| White: ").append(whitePlayer == null ? "open" : whitePlayer);
+        result.append(" \t| Black: ").append(blackPlayer == null ? "open" : blackPlayer);
+        return result.toString();
     }
 }

@@ -27,7 +27,6 @@ public class Main {
                     break;
                 }
             }
-//            System.out.println(state);
         }
         ChessBoardUI.printBoard(game.getBoard(), false);
     }

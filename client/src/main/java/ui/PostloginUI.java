@@ -3,6 +3,7 @@ package ui;
 import client.Client;
 import model.*;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -72,7 +73,7 @@ public class PostloginUI {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
                             this.game = game;
-                            this.state = State.game;
+//                            this.state = State.game;
                         } else {
                             System.out.print(textColorError);
                             System.out.print("Error creating game: ");
@@ -93,6 +94,16 @@ public class PostloginUI {
                         System.out.print(textColorError);
                         System.out.print("Error logging out: ");
                         System.out.println(obj);
+                    }
+                    break;
+                }
+                case "list":
+                case "List": {
+                    Object obj = Client.getGames(this.auth); {
+                        System.out.print(textColorDefault);
+                        System.out.print("Games: \n");
+                        System.out.print(textColorAlt);
+                        System.out.print(obj);
                     }
                     break;
                 }
