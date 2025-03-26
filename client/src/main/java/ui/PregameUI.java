@@ -10,16 +10,16 @@ public class PregameUI {
     private static final String textColorAlt = EscapeSequences.SET_TEXT_COLOR_YELLOW;
     private static final String textColorError = EscapeSequences.SET_TEXT_COLOR_RED;
 
-    private String state;
+    private State state;
     private Auth auth;
 
     public PregameUI() {
-        this.state = "pregame";
+        this.state = State.pregame;
     }
 
-    public void start(String state) {
+    public void start(State state) {
         this.state = state;
-        while (Objects.equals(this.state, "pregame")) {
+        while (Objects.equals(this.state, State.pregame)) {
             System.out.print(textColorDefault);
             System.out.print("Type Help to get started>>> ");
             Scanner scanner = new Scanner(System.in);
@@ -55,7 +55,7 @@ public class PregameUI {
                         if(obj instanceof Auth auth) {
                             System.out.print(textColorDefault);
                             System.out.print("User successfully created! \n");
-                            this.state = "postlogin";
+                            this.state = State.postlogin;
                             this.auth = auth;
                         } else {
                             System.out.print(textColorError);
@@ -74,7 +74,7 @@ public class PregameUI {
                         if(obj instanceof Auth auth) {
                             System.out.print(textColorDefault);
                             System.out.print("Successfully Logged In! \n");
-                            this.state = "postlogin";
+                            this.state = State.postlogin;
                             this.auth = auth;
                         } else {
                             System.out.print(textColorError);
@@ -86,7 +86,7 @@ public class PregameUI {
                 }
                 case "quit":
                 case "Quit": {
-                    this.state = "stop";
+                    this.state = State.stop;
                     System.out.print(textColorDefault);
                     System.out.print("Exiting program \n");
                     break;
@@ -104,7 +104,7 @@ public class PregameUI {
         return this.auth;
     }
 
-    public String getState() {
+    public State getState() {
         return this.state;
     }
 

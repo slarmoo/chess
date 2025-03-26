@@ -10,18 +10,18 @@ public class Main {
         System.out.println("♕ 240 Chess Client: " + piece);
         var game = new ChessGame();
         var pregame = new PregameUI();
-        String state = "pregame";
+        State state = State.pregame;
         pregame.start(state);
         state = pregame.getState();
-        while(!Objects.equals(state, "game") && !Objects.equals(state, "stop")) {
+        while(!Objects.equals(state, State.game) && !Objects.equals(state, State.stop)) {
             switch (state) {
-                case "postlogin": {
+                case State.postlogin: {
                     var postlogin = new PostloginUI(pregame.getAuth());
                     postlogin.start(state);
                     state = postlogin.getState();
                     break;
                 }
-                case "pregame": {
+                case State.pregame: {
                     pregame.start(state);
                     state = pregame.getState();
                     break;

@@ -11,18 +11,18 @@ public class PostloginUI {
     private static final String textColorAlt = EscapeSequences.SET_TEXT_COLOR_YELLOW;
     private static final String textColorError = EscapeSequences.SET_TEXT_COLOR_RED;
 
-    private String state;
+    private State state;
     private Auth auth;
     private Game game;
 
     public PostloginUI(Auth auth) {
-        this.state = "postlogin";
+        this.state = State.postlogin;
         this.auth = auth;
     }
 
-    public void start(String state) {
+    public void start(State state) {
         this.state = state;
-        while (Objects.equals(this.state, "postlogin")) {
+        while (Objects.equals(this.state, State.postlogin)) {
             System.out.print(textColorDefault);
             System.out.print("Type Help to get started>>> ");
             Scanner scanner = new Scanner(System.in);
@@ -72,7 +72,7 @@ public class PostloginUI {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
                             this.game = game;
-                            this.state = "game";
+                            this.state = State.game;
                         } else {
                             System.out.print(textColorError);
                             System.out.print("Error creating game: ");
@@ -87,7 +87,7 @@ public class PostloginUI {
                     if (obj.toString().equals("{}")) {
                         System.out.print(textColorDefault);
                         System.out.print("Successfully logged out! \n");
-                        this.state = "pregame";
+                        this.state = State.pregame;
                         this.auth = null;
                     } else {
                         System.out.print(textColorError);
@@ -98,19 +98,19 @@ public class PostloginUI {
                 }
                 case "quit":
                 case "Quit": {
-                    this.state = "stop";
+                    this.state = State.stop;
                     System.out.print(textColorDefault);
                     System.out.print("Exiting program \n");
                     break;
                 }
-                case "state":
-                    System.out.print(textColorAlt);
-                    System.out.println(this.state);
-                    break;
-                case "auth":
-                    System.out.print(textColorAlt);
-                    System.out.println(this.auth);
-                    break;
+//                case "state":
+//                    System.out.print(textColorAlt);
+//                    System.out.println(this.state);
+//                    break;
+//                case "auth":
+//                    System.out.print(textColorAlt);
+//                    System.out.println(this.auth);
+//                    break;
                 case null, default: {
                     System.out.print(textColorError);
                     System.out.println("Unrecognized command. Type Help for help");
@@ -120,7 +120,7 @@ public class PostloginUI {
         }
     }
 
-    public String getState() {
+    public State getState() {
         return this.state;
     }
 
