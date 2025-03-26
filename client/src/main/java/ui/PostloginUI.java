@@ -1,7 +1,7 @@
 package ui;
 
 import client.Client;
-import model.Auth;
+import model.*;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -12,16 +12,17 @@ public class PostloginUI {
     private static final String textColorError = EscapeSequences.SET_TEXT_COLOR_RED;
 
     private String state;
-    private final Auth auth;
+    private Auth auth;
+    private Game game;
 
     public PostloginUI(Auth auth) {
         this.state = "postlogin";
         this.auth = auth;
     }
 
-    public void start() {
-        while (Objects.equals(state, "postlogin")) {
-
+    public void start(String state) {
+        this.state = state;
+        while (Objects.equals(this.state, "postlogin")) {
             System.out.print(textColorDefault);
             System.out.print("Type Help to get started>>> ");
             Scanner scanner = new Scanner(System.in);
@@ -62,6 +63,39 @@ public class PostloginUI {
                     System.out.print(" - close this program \n");
                     break;
                 }
+                case "create":
+                case "Create": {
+                    if (checkLength(command, 2)) {
+                        String gameName = command[1];
+                        Object obj = Client.createGame(gameName, this.auth);
+                        if (obj instanceof Game game) {
+                            System.out.print(textColorDefault);
+                            System.out.print("Game successfully created! \n");
+                            this.game = game;
+                            this.state = "game";
+                        } else {
+                            System.out.print(textColorError);
+                            System.out.print("Error creating game: ");
+                            System.out.println(obj);
+                        }
+                    }
+                    break;
+                }
+                case "logout":
+                case "Logout": {
+                    Object obj = Client.logout(this.auth);
+                    if (obj.toString().equals("{}")) {
+                        System.out.print(textColorDefault);
+                        System.out.print("Successfully logged out! \n");
+                        this.state = "pregame";
+                        this.auth = null;
+                    } else {
+                        System.out.print(textColorError);
+                        System.out.print("Error logging out: ");
+                        System.out.println(obj);
+                    }
+                    break;
+                }
                 case "quit":
                 case "Quit": {
                     this.state = "stop";
@@ -69,6 +103,14 @@ public class PostloginUI {
                     System.out.print("Exiting program \n");
                     break;
                 }
+                case "state":
+                    System.out.print(textColorAlt);
+                    System.out.println(this.state);
+                    break;
+                case "auth":
+                    System.out.print(textColorAlt);
+                    System.out.println(this.auth);
+                    break;
                 case null, default: {
                     System.out.print(textColorError);
                     System.out.println("Unrecognized command. Type Help for help");
@@ -80,6 +122,10 @@ public class PostloginUI {
 
     public String getState() {
         return this.state;
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 
     private boolean checkLength(String[] command, int length) {

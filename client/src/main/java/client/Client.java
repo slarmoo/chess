@@ -11,7 +11,7 @@ public class Client {
 
     public static Object register(String username, String password, String email) {
         try {
-            return writeObjectToPath(new User(username, password, email), "user", "POST", Auth.class);
+            return writeObjectToPath(new User(username, password, email), "user", "POST", Auth.class, null);
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -19,7 +19,7 @@ public class Client {
 
     public static Object login(String username, String password) {
         try {
-            return writeObjectToPath(new User(username, password, null), "session", "POST", Auth.class);
+            return writeObjectToPath(new User(username, password, null), "session", "POST", Auth.class, null);
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -27,15 +27,25 @@ public class Client {
 
     public static Object logout(Auth auth) {
         try {
-            return writeObjectToPath(auth, "session", "DELETE", Object.class);
+            return writeObjectToPath(null, "session", "DELETE", Object.class, auth);
         } catch (Exception e) {
             return e.getMessage();
         }
     }
 
-    private static Object writeObjectToPath(Object obj, String path, String requestMethod, Class classType) throws Exception {
+    public static Object createGame(String gameName, Auth auth) {
+        try {
+            return writeObjectToPath(gameName,"game", "POST", Game.class, auth);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    private static Object writeObjectToPath(Object obj, String path, String requestMethod, Class classType, Auth auth) throws Exception {
         URI uri = new URI(urlBase + path);
+
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+//        System.out.println(requestMethod);
         http.setRequestMethod(requestMethod);
 
         // Specify that we are going to write out data
@@ -43,21 +53,36 @@ public class Client {
 
         // Write out a header
         http.addRequestProperty("Content-Type", "application/json");
+        if(auth != null) {
+//            System.out.println("writing auth");
+            http.addRequestProperty("authorization", auth.authToken());
+//            System.out.println(auth);
+        }
 
         // Write out the body
         var outputStream = http.getOutputStream();
-        var jsonBody = new Gson().toJson(obj);
-        outputStream.write(jsonBody.getBytes());
+        if(obj != null) {
+//            System.out.println("writing object");
+//            System.out.println(obj);
+            outputStream.write(new Gson().toJson(obj).getBytes());
+        }
 
-        // Make the request
-        http.connect();
+//         Make the request
+            http.connect();
 
         var status = http.getResponseCode();
         InputStream in = http.getInputStream();
+
+        Object returnObj;
         if ( status >= 200 && status < 300) {
-            return new Gson().fromJson(new InputStreamReader(in), classType);
+            returnObj =  new Gson().fromJson(new InputStreamReader(in), classType); //okay, create proper output
         } else {
-            return new Gson().fromJson(new InputStreamReader(in), Object.class);
+            returnObj = new Gson().fromJson(new InputStreamReader(in), String.class); //otherwise return a default string with error message
         }
+
+        http.disconnect();
+
+
+        return returnObj;
     }
 }

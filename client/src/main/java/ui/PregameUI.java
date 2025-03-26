@@ -17,8 +17,9 @@ public class PregameUI {
         this.state = "pregame";
     }
 
-    public void start() {
-        while (Objects.equals(state, "pregame")) {
+    public void start(String state) {
+        this.state = state;
+        while (Objects.equals(this.state, "pregame")) {
             System.out.print(textColorDefault);
             System.out.print("Type Help to get started>>> ");
             Scanner scanner = new Scanner(System.in);

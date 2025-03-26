@@ -10,11 +10,25 @@ public class Main {
         System.out.println("♕ 240 Chess Client: " + piece);
         var game = new ChessGame();
         var pregame = new PregameUI();
-        pregame.start();
-        var postlogin = new PostloginUI(pregame.getAuth());
-        if(Objects.equals(pregame.getState(), "postlogin")) {
-            postlogin.start();
-            ChessBoardUI.printBoard(game.getBoard(), false);
+        String state = "pregame";
+        pregame.start(state);
+        state = pregame.getState();
+        while(!Objects.equals(state, "game") && !Objects.equals(state, "stop")) {
+            switch (state) {
+                case "postlogin": {
+                    var postlogin = new PostloginUI(pregame.getAuth());
+                    postlogin.start(state);
+                    state = postlogin.getState();
+                    break;
+                }
+                case "pregame": {
+                    pregame.start(state);
+                    state = pregame.getState();
+                    break;
+                }
+            }
+//            System.out.println(state);
         }
+        ChessBoardUI.printBoard(game.getBoard(), false);
     }
 }
