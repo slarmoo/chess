@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
-    private static final String urlBase = "http://localhost:8081/";
+    private static final String URL_Base = "http://localhost:8081/";
 
     public static Object register(String username, String password, String email) {
         try {
@@ -95,7 +95,7 @@ public class ServerFacade {
     }
 
     private static <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {
-        URI uri = new URI(urlBase + path);
+        URI uri = new URI(URL_Base + path);
 
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod(requestMethod);
@@ -137,7 +137,7 @@ public class ServerFacade {
     private static Game[] grabGames(Auth auth) throws Exception {
         record ListGamesResponse(Game[] games) {
         }
-        URI uri = new URI(urlBase + "game");
+        URI uri = new URI(URL_Base + "game");
 
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("GET");
