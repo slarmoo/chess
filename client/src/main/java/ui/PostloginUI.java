@@ -83,13 +83,6 @@ public class PostloginUI {
                     this.spectate(command);
                     break;
                 }
-                case "quit":
-                case "Quit": {
-                    this.state = State.stop;
-                    System.out.print(TEXT_COLOR_DEFAULT);
-                    System.out.print("Exiting program \n");
-                    break;
-                }
                 case null, default: {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Unrecognized command. Type Help for help");
@@ -152,9 +145,9 @@ public class PostloginUI {
         System.out.print(" - logs out of your chess account \n");
 
         System.out.print(TEXT_COLOR_ALT);
-        System.out.print("quit");
+        System.out.print("help");
         System.out.print(TEXT_COLOR_DEFAULT);
-        System.out.print(" - close this program \n");
+        System.out.print(" - help with what commands you can use \n");
     }
 
     private void create(String[] command) {
@@ -220,6 +213,7 @@ public class PostloginUI {
                     System.out.print("joined game \n");
                     this.state = State.game;
                     this.game = game;
+                    this.yourColor = ChessGame.TeamColor.WHITE;
                 } else {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Error trying to spectate game " + id);

@@ -18,7 +18,7 @@ public class ChessBoardUI {
                 System.out.print(EDGE_BG_COLOR);
                 System.out.print(EDGE_TEXT_COLOR);
                 System.out.print(getPrettyCharacter(i + ""));
-                for(int j = 8; j >= 1; j--) {
+                for(int j = 1; j <= 8; j++) {
                     printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
                 }
                 System.out.print(EDGE_BG_COLOR);
@@ -32,7 +32,7 @@ public class ChessBoardUI {
                 System.out.print(EDGE_BG_COLOR);
                 System.out.print(EDGE_TEXT_COLOR);
                 System.out.print(getPrettyCharacter(i + ""));
-                for(int j = 1; j <= 8; j++) {
+                for(int j = 8; j >= 1; j--) {
                     printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
                 }
                 System.out.print(EDGE_BG_COLOR);

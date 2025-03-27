@@ -42,6 +42,11 @@ public class PregameUI {
                     System.out.print(" - login to your chess account \n");
 
                     System.out.print(TEXT_COLOR_ALT);
+                    System.out.print("help");
+                    System.out.print(TEXT_COLOR_DEFAULT);
+                    System.out.print(" - help with what commands you can use \n");
+
+                    System.out.print(TEXT_COLOR_ALT);
                     System.out.print("quit");
                     System.out.print(TEXT_COLOR_DEFAULT);
                     System.out.print(" - close this program \n");
