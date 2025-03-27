@@ -13,11 +13,13 @@ public class ServerFacadeTests {
 
     private static ServerFacade serverFacade;
 
+    private static int port;
+
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
-        serverFacade = new ServerFacade("http://localhost:" + port);
+        port = server.run(0);
+        serverFacade = new ServerFacade("http://localhost:" + port + "/");
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -167,7 +169,7 @@ public class ServerFacadeTests {
         try {
             serverFacade.grabGameWithID(1, new Auth("", ""));
         } catch (Exception e) {
-            Assertions.assertEquals("Server returned HTTP response code: 401 for URL: http://localhost:8080/game", e.getMessage());
+            Assertions.assertEquals("Server returned HTTP response code: 401 for URL: http://localhost:" + port + "/game", e.getMessage());
         }
     }
 
