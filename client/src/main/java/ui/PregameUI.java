@@ -59,8 +59,7 @@ public class PregameUI {
                             this.auth = auth;
                         } else {
                             System.out.print(textColorError);
-                            System.out.print("Error creating user: ");
-                            System.out.println(obj);
+                            System.out.println("Error creating user");
                         }
                     }
                     break;
@@ -78,8 +77,7 @@ public class PregameUI {
                             this.auth = auth;
                         } else {
                             System.out.print(textColorError);
-                            System.out.print("Error logging in: ");
-                            System.out.println(obj);
+                            System.out.println("Error logging in: incorrect credentials");
                         }
                     }
                     break;

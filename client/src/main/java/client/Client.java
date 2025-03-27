@@ -43,22 +43,22 @@ public class Client {
         }
     }
 
-    public static Object getGames(Auth auth) {
+    public static String getGames(Auth auth) {
         try {
             var games = grabGames(auth);
-            if(games != null) {
+            if(games != null && games.length != 0) {
                 var result = new StringBuilder();
                 int count = 1;
                 for (Game game : games) {
                     result.append(Client.parseGame(game, count)).append('\n');
                     count++;
                 }
-                return result;
+                return result.toString();
             }
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
-        return "[none]";
+        return "[empty] \n";
     }
 
     public static Object joinGame(int id, ChessGame.TeamColor color, Auth auth) {
@@ -72,7 +72,7 @@ public class Client {
         }
     }
 
-    private static Game grabGameWithID(int id, Auth auth) throws Exception {
+    public static Game grabGameWithID(int id, Auth auth) throws Exception {
         var games = grabGames(auth);
         if(games != null) {
             int count = 1;
@@ -84,6 +84,14 @@ public class Client {
             }
         }
         return null;
+    }
+
+    public static void emptyDatabase() {
+        try {
+            writeObjectToPath(null, "db", "DELETE", Object.class, null);
+        } catch (Exception e) {
+            return;
+        }
     }
 
     private static <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {

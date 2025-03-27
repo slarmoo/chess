@@ -24,6 +24,7 @@ public class Main {
                 case State.pregame: {
                     pregame.start(state);
                     state = pregame.getState();
+                    postlogin.setAuth(pregame.getAuth());
                     break;
                 }
             }
@@ -31,7 +32,7 @@ public class Main {
         boolean isRightSideUp = true;
         if(postlogin.getGame() != null) {
             game = postlogin.getGame().game();
-            isRightSideUp = Objects.equals(postlogin.getGame().whiteUsername(), pregame.getAuth().username());
+            isRightSideUp = Objects.equals(postlogin.getColor(), ChessGame.TeamColor.WHITE);
         }
         ChessBoardUI.printBoard(game.getBoard(), isRightSideUp);
     }

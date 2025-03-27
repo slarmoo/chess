@@ -16,6 +16,7 @@ public class PostloginUI {
     private State state;
     private Auth auth;
     private Game game = null;
+    private ChessGame.TeamColor yourColor = ChessGame.TeamColor.WHITE;
 
     public PostloginUI(Auth auth) {
         this.state = State.postlogin;
@@ -73,8 +74,6 @@ public class PostloginUI {
                         if (obj instanceof Game game) {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
-//                            this.game = game;
-//                            this.state = State.game;
                         } else {
                             System.out.print(textColorError);
                             System.out.print("Error creating game: ");
@@ -100,11 +99,15 @@ public class PostloginUI {
                 }
                 case "list":
                 case "List": {
-                    Object obj = Client.getGames(this.auth); {
+                    String games = Client.getGames(this.auth);
+                    if(games != null) {
                         System.out.print(textColorDefault);
                         System.out.print("Games: \n");
                         System.out.print(textColorAlt);
-                        System.out.print(obj);
+                        System.out.print(games);
+                    } else {
+                        System.out.print(textColorError);
+                        System.out.println("Error grabbing games");
                     }
                     break;
                 }
@@ -133,16 +136,42 @@ public class PostloginUI {
                             System.out.print("joined game \n");
                             this.state = State.game;
                             this.game = game;
+                            this.yourColor = color;
                         } else {
                             System.out.print(textColorError);
-                            System.out.print("Error trying to join game " + id + ": ");
-                            System.out.println(obj);
+                            System.out.println("Error trying to join game " + id);
                         }
                     }
                     break;
                 }
                 case "spectate":
                 case "Spectate": {
+                    if(checkLength(command, 2)) {
+                        int id;
+                        try {
+                            id = Integer.parseInt(command[1]);
+                        } catch (NumberFormatException e) {
+                            System.out.print(textColorError);
+                            System.out.println("Not a number. Type Help for help");
+                            break;
+                        }
+                        try {
+                            Game game = Client.grabGameWithID(id, this.auth);
+                            if (game != null) {
+                                System.out.print(textColorDefault);
+                                System.out.print("joined game \n");
+                                this.state = State.game;
+                                this.game = game;
+                            } else {
+                                System.out.print(textColorError);
+                                System.out.println("Error trying to spectate game " + id);
+                            }
+                        } catch (Exception e) {
+                            System.out.print(textColorError);
+                            System.out.println("Error trying to spectate game " + id);
+                            break;
+                        }
+                    }
                     break;
                 }
                 case "quit":
@@ -152,13 +181,17 @@ public class PostloginUI {
                     System.out.print("Exiting program \n");
                     break;
                 }
-//                case "state":
+//                case "test:state":
 //                    System.out.print(textColorAlt);
 //                    System.out.println(this.state);
 //                    break;
-//                case "auth":
+//                case "test:auth":
 //                    System.out.print(textColorAlt);
 //                    System.out.println(this.auth);
+//                    break;
+//                case "test:empty":
+//                    Client.emptyDatabase();
+//                    this.state = State.stop;
 //                    break;
                 case null, default: {
                     System.out.print(textColorError);
@@ -175,6 +208,14 @@ public class PostloginUI {
 
     public Game getGame() {
         return this.game;
+    }
+
+    public void setAuth(Auth auth) {
+        this.auth = auth;
+    }
+
+    public ChessGame.TeamColor getColor() {
+        return this.yourColor;
     }
 
     private boolean checkLength(String[] command, int length) {
