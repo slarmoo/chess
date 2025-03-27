@@ -1,5 +1,5 @@
 package ui;
-import client.Client;
+import client.ServerFacade;
 import model.Auth;
 
 import java.util.Objects;
@@ -51,7 +51,7 @@ public class PregameUI {
                         String username = command[1];
                         String password = command[2];
                         String email = command[3];
-                        Object obj = Client.register(username, password, email);
+                        Object obj = ServerFacade.register(username, password, email);
                         if(obj instanceof Auth auth) {
                             System.out.print(textColorDefault);
                             System.out.print("User successfully created! \n");
@@ -69,7 +69,7 @@ public class PregameUI {
                     if(checkLength(command, 3)) {
                         String username = command[1];
                         String password = command[2];
-                        Object obj = Client.login(username, password);
+                        Object obj = ServerFacade.login(username, password);
                         if(obj instanceof Auth auth) {
                             System.out.print(textColorDefault);
                             System.out.print("Successfully Logged In! \n");

@@ -27,13 +27,16 @@ public class Main {
                     postlogin.setAuth(pregame.getAuth());
                     break;
                 }
+                case State.game: {
+                    boolean isRightSideUp = true;
+                    if(postlogin.getGame() != null) {
+                        game = postlogin.getGame().game();
+                        isRightSideUp = Objects.equals(postlogin.getColor(), ChessGame.TeamColor.WHITE);
+                    }
+                    ChessBoardUI.printBoard(game.getBoard(), isRightSideUp);
+                    state = State.postlogin;
+                }
             }
         }
-        boolean isRightSideUp = true;
-        if(postlogin.getGame() != null) {
-            game = postlogin.getGame().game();
-            isRightSideUp = Objects.equals(postlogin.getColor(), ChessGame.TeamColor.WHITE);
-        }
-        ChessBoardUI.printBoard(game.getBoard(), isRightSideUp);
     }
 }

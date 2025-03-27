@@ -1,10 +1,9 @@
 package ui;
 
 import chess.ChessGame;
-import client.Client;
+import client.ServerFacade;
 import model.*;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -70,7 +69,7 @@ public class PostloginUI {
                 case "Create": {
                     if (checkLength(command, 2)) {
                         String gameName = command[1];
-                        Object obj = Client.createGame(gameName, this.auth);
+                        Object obj = ServerFacade.createGame(gameName, this.auth);
                         if (obj instanceof Game game) {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
@@ -84,7 +83,7 @@ public class PostloginUI {
                 }
                 case "logout":
                 case "Logout": {
-                    Object obj = Client.logout(this.auth);
+                    Object obj = ServerFacade.logout(this.auth);
                     if (obj.toString().equals("{}")) {
                         System.out.print(textColorDefault);
                         System.out.print("Successfully logged out! \n");
@@ -99,7 +98,7 @@ public class PostloginUI {
                 }
                 case "list":
                 case "List": {
-                    String games = Client.getGames(this.auth);
+                    String games = ServerFacade.getGames(this.auth);
                     if(games != null) {
                         System.out.print(textColorDefault);
                         System.out.print("Games: \n");
@@ -130,7 +129,7 @@ public class PostloginUI {
                             System.out.println("Unrecognized color. Type Help for help");
                             break;
                         }
-                        Object obj = Client.joinGame(id, color, auth);
+                        Object obj = ServerFacade.joinGame(id, color, auth);
                         if (obj instanceof Game game) {
                             System.out.print(textColorDefault);
                             System.out.print("joined game \n");
@@ -156,7 +155,7 @@ public class PostloginUI {
                             break;
                         }
                         try {
-                            Game game = Client.grabGameWithID(id, this.auth);
+                            Game game = ServerFacade.grabGameWithID(id, this.auth);
                             if (game != null) {
                                 System.out.print(textColorDefault);
                                 System.out.print("joined game \n");
@@ -190,7 +189,7 @@ public class PostloginUI {
 //                    System.out.println(this.auth);
 //                    break;
 //                case "test:empty":
-//                    Client.emptyDatabase();
+//                    ServerFacade.emptyDatabase();
 //                    this.state = State.stop;
 //                    break;
                 case null, default: {

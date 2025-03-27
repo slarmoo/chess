@@ -7,7 +7,7 @@ import model.*;
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class ServerFacade {
     private static final String urlBase = "http://localhost:8081/";
 
     public static Object register(String username, String password, String email) {
@@ -50,7 +50,7 @@ public class Client {
                 var result = new StringBuilder();
                 int count = 1;
                 for (Game game : games) {
-                    result.append(Client.parseGame(game, count)).append('\n');
+                    result.append(ServerFacade.parseGame(game, count)).append('\n');
                     count++;
                 }
                 return result.toString();
