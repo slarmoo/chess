@@ -17,6 +17,8 @@ public class PostloginUI {
     private Game game = null;
     private ChessGame.TeamColor yourColor = ChessGame.TeamColor.WHITE;
 
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+
     public PostloginUI(Auth auth) {
         this.state = State.postlogin;
         this.auth = auth;
@@ -44,7 +46,7 @@ public class PostloginUI {
                 }
                 case "logout":
                 case "Logout": {
-                    Object obj = ServerFacade.logout(this.auth);
+                    Object obj = serverFacade.logout(this.auth);
                     if (obj.toString().equals("{}")) {
                         System.out.print(TEXT_COLOR_DEFAULT);
                         System.out.print("Successfully logged out! \n");
@@ -59,7 +61,7 @@ public class PostloginUI {
                 }
                 case "list":
                 case "List": {
-                    String games = ServerFacade.getGames(this.auth);
+                    String games = serverFacade.getGames(this.auth);
                     if(games != null) {
                         System.out.print(TEXT_COLOR_DEFAULT);
                         System.out.print("Games: \n");
@@ -158,7 +160,7 @@ public class PostloginUI {
     private void create(String[] command) {
         if (checkLength(command, 2)) {
             String gameName = command[1];
-            Object obj = ServerFacade.createGame(gameName, this.auth);
+            Object obj = serverFacade.createGame(gameName, this.auth);
             if (obj instanceof Game) {
                 System.out.print(TEXT_COLOR_DEFAULT);
                 System.out.print("Game successfully created! \n");
@@ -187,7 +189,7 @@ public class PostloginUI {
                 System.out.println("Unrecognized color. Type Help for help");
                 return;
             }
-            Object obj = ServerFacade.joinGame(id, color, auth);
+            Object obj = serverFacade.joinGame(id, color, auth);
             if (obj instanceof Game game) {
                 System.out.print(TEXT_COLOR_DEFAULT);
                 System.out.print("joined game \n");
@@ -212,7 +214,7 @@ public class PostloginUI {
                 return;
             }
             try {
-                Game game = ServerFacade.grabGameWithID(id, this.auth);
+                Game game = serverFacade.grabGameWithID(id, this.auth);
                 if (game != null) {
                     System.out.print(TEXT_COLOR_DEFAULT);
                     System.out.print("joined game \n");

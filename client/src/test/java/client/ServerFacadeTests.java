@@ -11,6 +11,8 @@ public class ServerFacadeTests {
 
     private static Server server;
 
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+
     @BeforeAll
     public static void init() {
         server = new Server();
@@ -25,7 +27,7 @@ public class ServerFacadeTests {
 
     @BeforeEach
     void emptyDatabase() {
-        ServerFacade.emptyDatabase();
+        serverFacade.emptyDatabase();
     }
 
 
@@ -33,7 +35,7 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("Successful Register")
     public void registerS() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
     }
 
@@ -41,8 +43,8 @@ public class ServerFacadeTests {
     @Order(2)
     @DisplayName("Unsuccessful Register")
     public void registerF() {
-        ServerFacade.register("a", "a", "a");
-        Object obj = ServerFacade.register("a", "a", "a"); //already registered
+        serverFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a"); //already registered
         Assertions.assertFalse(obj instanceof Auth);
     }
 
@@ -50,8 +52,8 @@ public class ServerFacadeTests {
     @Order(3)
     @DisplayName("Successful Login")
     public void loginS() {
-        ServerFacade.register("a", "a", "a");
-        Object obj = ServerFacade.login("a", "a");
+        serverFacade.register("a", "a", "a");
+        Object obj = serverFacade.login("a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
     }
 
@@ -59,10 +61,10 @@ public class ServerFacadeTests {
     @Order(4)
     @DisplayName("Unsuccessful Login")
     public void loginF() {
-        ServerFacade.register("a", "a", "a");
-        Object obj = ServerFacade.login("b", "b"); //user doesn't exist
+        serverFacade.register("a", "a", "a");
+        Object obj = serverFacade.login("b", "b"); //user doesn't exist
         Assertions.assertFalse(obj instanceof Auth);
-        obj = ServerFacade.login("a", "b"); //incorrect credentials
+        obj = serverFacade.login("a", "b"); //incorrect credentials
         Assertions.assertFalse(obj instanceof Auth);
     }
 
@@ -70,10 +72,10 @@ public class ServerFacadeTests {
     @Order(5)
     @DisplayName("Successful Create Game")
     public void createGameS() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test", auth);
+        obj = serverFacade.createGame("test", auth);
         Assertions.assertInstanceOf(Game.class, obj);
     }
 
@@ -81,7 +83,7 @@ public class ServerFacadeTests {
     @Order(6)
     @DisplayName("Unsuccessful Create Game")
     public void createGameF() {
-        Object obj = ServerFacade.createGame("test", new Auth("", "")); //unauthorized
+        Object obj = serverFacade.createGame("test", new Auth("", "")); //unauthorized
         Assertions.assertFalse(obj instanceof Game);
     }
 
@@ -89,16 +91,16 @@ public class ServerFacadeTests {
     @Order(7)
     @DisplayName("Successful List Games")
     public void listGamesS() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
+        obj = serverFacade.createGame("test1", auth);
         Assertions.assertInstanceOf(Game.class, obj);
-        obj = ServerFacade.createGame("test2", auth);
+        obj = serverFacade.createGame("test2", auth);
         Assertions.assertInstanceOf(Game.class, obj);
-        obj = ServerFacade.createGame("test3", auth);
+        obj = serverFacade.createGame("test3", auth);
         Assertions.assertInstanceOf(Game.class, obj);
-        String observed = ServerFacade.getGames(auth);
+        String observed = serverFacade.getGames(auth);
         Assertions.assertNotNull(observed);
         String expected =   ServerFacade.parseGame(createTestGame(1), 1) + "\n" +
                             ServerFacade.parseGame(createTestGame(2), 2) + "\n" +
@@ -110,10 +112,10 @@ public class ServerFacadeTests {
     @Order(8)
     @DisplayName("Successful List Games Empty")
     public void listGamesE() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        String observed = ServerFacade.getGames(auth);
+        String observed = serverFacade.getGames(auth);
         Assertions.assertNotNull(observed);
         Assertions.assertEquals("[empty] \n", observed);
     }
@@ -122,11 +124,11 @@ public class ServerFacadeTests {
     @Order(9)
     @DisplayName("Unsuccessful List Games")
     public void listGamesF() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
-        String observed = ServerFacade.getGames(new Auth("", ""));
+        obj = serverFacade.createGame("test1", auth);
+        String observed = serverFacade.getGames(new Auth("", ""));
         Assertions.assertNull(observed);
     }
 
@@ -134,12 +136,12 @@ public class ServerFacadeTests {
     @Order(10)
     @DisplayName("Successful Spectate")
     public void spectateS() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
+        obj = serverFacade.createGame("test1", auth);
         try {
-            Game game = ServerFacade.grabGameWithID(1, auth);
+            Game game = serverFacade.grabGameWithID(1, auth);
             Assertions.assertNotNull(game);
             Assertions.assertEquals("test1", game.gameName());
         } catch (Exception e) {
@@ -151,18 +153,18 @@ public class ServerFacadeTests {
     @Order(11)
     @DisplayName("Unsuccessful Spectate")
     public void spectateF() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
+        obj = serverFacade.createGame("test1", auth);
         try {
-            Game game = ServerFacade.grabGameWithID(2, auth);
+            Game game = serverFacade.grabGameWithID(2, auth);
             Assertions.assertNull(game);
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }
         try {
-            ServerFacade.grabGameWithID(1, new Auth("", ""));
+            serverFacade.grabGameWithID(1, new Auth("", ""));
         } catch (Exception e) {
             Assertions.assertEquals("Server returned HTTP response code: 401 for URL: http://localhost:8081/game", e.getMessage());
         }
@@ -172,11 +174,11 @@ public class ServerFacadeTests {
     @Order(12)
     @DisplayName("Successful Join Game")
     public void joinGameS() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
-        obj = ServerFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth);
+        obj = serverFacade.createGame("test1", auth);
+        obj = serverFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth);
         Assertions.assertInstanceOf(Game.class, obj);
         Game game = (Game) obj;
         Assertions.assertEquals("test1", game.gameName());
@@ -187,20 +189,20 @@ public class ServerFacadeTests {
     @Order(13)
     @DisplayName("Unsuccessful Join Game")
     public void joinGameF() {
-        Object obj = ServerFacade.register("a", "a", "a");
+        Object obj = serverFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
-        obj = ServerFacade.createGame("test1", auth);
-        obj = ServerFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth); //should succeed
+        obj = serverFacade.createGame("test1", auth);
+        obj = serverFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth); //should succeed
         Assertions.assertInstanceOf(Game.class, obj);
         Game game = (Game) obj;
         Assertions.assertEquals("test1", game.gameName());
         Assertions.assertEquals("a", game.blackUsername());
-        obj = ServerFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth); //joining taken place
+        obj = serverFacade.joinGame(1, ChessGame.TeamColor.BLACK, auth); //joining taken place
         Assertions.assertFalse(obj instanceof Game);
-        obj = ServerFacade.joinGame(2, ChessGame.TeamColor.BLACK, auth); //joining game that doesn't exist
+        obj = serverFacade.joinGame(2, ChessGame.TeamColor.BLACK, auth); //joining game that doesn't exist
         Assertions.assertFalse(obj instanceof Game);
-        obj = ServerFacade.joinGame(1, ChessGame.TeamColor.WHITE, new Auth("", "")); //joining with invalid auth
+        obj = serverFacade.joinGame(1, ChessGame.TeamColor.WHITE, new Auth("", "")); //joining with invalid auth
         Assertions.assertFalse(obj instanceof Game);
     }
 
@@ -208,8 +210,8 @@ public class ServerFacadeTests {
     @Order(14)
     @DisplayName("Successful Logout")
     public void logoutS() {
-        Object obj = ServerFacade.register("a", "a", "a");
-        obj = ServerFacade.logout((Auth) obj);
+        Object obj = serverFacade.register("a", "a", "a");
+        obj = serverFacade.logout((Auth) obj);
         Assertions.assertEquals("{}", obj.toString());
     }
 
@@ -217,8 +219,8 @@ public class ServerFacadeTests {
     @Order(15)
     @DisplayName("Unsuccessful Logout")
     public void logoutF() {
-        ServerFacade.register("a", "a", "a");
-        Object obj = ServerFacade.logout(new Auth("", "")); //invalid auth
+        serverFacade.register("a", "a", "a");
+        Object obj = serverFacade.logout(new Auth("", "")); //invalid auth
         Assertions.assertNotEquals("{}", obj.toString());
     }
 

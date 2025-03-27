@@ -8,9 +8,13 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
-    private static final String URL_Base = "http://localhost:8081/";
+    private final String serverUrl;
 
-    public static Object register(String username, String password, String email) {
+    public ServerFacade(String url) {
+        serverUrl = url;
+    }
+
+    public Object register(String username, String password, String email) {
         try {
             return writeObjectToPath(new User(username, password, email), "user", "POST", Auth.class, null);
         } catch (Exception e) {
@@ -18,7 +22,7 @@ public class ServerFacade {
         }
     }
 
-    public static Object login(String username, String password) {
+    public Object login(String username, String password) {
         try {
             return writeObjectToPath(new User(username, password, null), "session", "POST", Auth.class, null);
         } catch (Exception e) {
@@ -26,7 +30,7 @@ public class ServerFacade {
         }
     }
 
-    public static Object logout(Auth auth) {
+    public Object logout(Auth auth) {
         try {
             return writeObjectToPath(null, "session", "DELETE", Object.class, auth);
         } catch (Exception e) {
@@ -34,7 +38,7 @@ public class ServerFacade {
         }
     }
 
-    public static Object createGame(String gameName, Auth auth) {
+    public Object createGame(String gameName, Auth auth) {
         try {
             return writeObjectToPath(new Game(0, "", "", gameName, new ChessGame()),
                     "game", "POST", Game.class, auth);
@@ -43,7 +47,7 @@ public class ServerFacade {
         }
     }
 
-    public static String getGames(Auth auth) {
+    public String getGames(Auth auth) {
         try {
             var games = grabGames(auth);
             if(games != null && games.length != 0) {
@@ -61,7 +65,7 @@ public class ServerFacade {
         return "[empty] \n";
     }
 
-    public static Object joinGame(int id, ChessGame.TeamColor color, Auth auth) {
+    public Object joinGame(int id, ChessGame.TeamColor color, Auth auth) {
         try {
             Game game = grabGameWithID(id, auth);
             writeObjectToPath(new JoinGameRequest(color.name(), game.gameID()),
@@ -72,7 +76,7 @@ public class ServerFacade {
         }
     }
 
-    public static Game grabGameWithID(int id, Auth auth) throws Exception {
+    public Game grabGameWithID(int id, Auth auth) throws Exception {
         var games = grabGames(auth);
         if(games != null) {
             int count = 1;
@@ -86,7 +90,7 @@ public class ServerFacade {
         return null;
     }
 
-    public static void emptyDatabase() {
+    public void emptyDatabase() {
         try {
             writeObjectToPath(null, "db", "DELETE", Object.class, null);
         } catch (Exception e) {
@@ -94,8 +98,8 @@ public class ServerFacade {
         }
     }
 
-    private static <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {
-        URI uri = new URI(URL_Base + path);
+    private <T> Object writeObjectToPath(Object obj, String path, String requestMethod, Class<T> classType, Auth auth) throws Exception {
+        URI uri = new URI(serverUrl + path);
 
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod(requestMethod);
@@ -134,10 +138,10 @@ public class ServerFacade {
         return returnObj;
     }
 
-    private static Game[] grabGames(Auth auth) throws Exception {
+    private Game[] grabGames(Auth auth) throws Exception {
         record ListGamesResponse(Game[] games) {
         }
-        URI uri = new URI(URL_Base + "game");
+        URI uri = new URI(serverUrl + "game");
 
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("GET");

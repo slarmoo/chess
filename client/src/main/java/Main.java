@@ -14,7 +14,7 @@ public class Main {
         pregame.start(state);
         var postlogin = new PostloginUI(pregame.getAuth());
         state = pregame.getState();
-        while(!Objects.equals(state, State.game) && !Objects.equals(state, State.stop)) {
+        while(!Objects.equals(state, State.stop)) {
             switch (state) {
                 case State.postlogin: {
                     postlogin.start(state);

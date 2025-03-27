@@ -13,6 +13,8 @@ public class PregameUI {
     private State state;
     private Auth auth;
 
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+
     public PregameUI() {
         this.state = State.pregame;
     }
@@ -85,7 +87,7 @@ public class PregameUI {
             String username = command[1];
             String password = command[2];
             String email = command[3];
-            Object obj = ServerFacade.register(username, password, email);
+            Object obj = serverFacade.register(username, password, email);
             if(obj instanceof Auth auth) {
                 System.out.print(TEXT_COLOR_DEFAULT);
                 System.out.print("User successfully created! \n");
@@ -102,7 +104,7 @@ public class PregameUI {
         if(checkLength(command, 3)) {
             String username = command[1];
             String password = command[2];
-            Object obj = ServerFacade.login(username, password);
+            Object obj = serverFacade.login(username, password);
             if(obj instanceof Auth auth) {
                 System.out.print(TEXT_COLOR_DEFAULT);
                 System.out.print("Successfully Logged In! \n");
