@@ -66,7 +66,7 @@ public class ServerFacade {
             Game game = grabGameWithID(id, auth);
             writeObjectToPath(new JoinGameRequest(color.name(), game.gameID()),
                     "game", "PUT", Auth.class, auth);
-            return game;
+            return grabGameWithID(id, auth); //grab updated version
         } catch (Exception e) {
             return e.getMessage();
         }

@@ -70,13 +70,12 @@ public class PostloginUI {
                     if (checkLength(command, 2)) {
                         String gameName = command[1];
                         Object obj = ServerFacade.createGame(gameName, this.auth);
-                        if (obj instanceof Game game) {
+                        if (obj instanceof Game) {
                             System.out.print(textColorDefault);
                             System.out.print("Game successfully created! \n");
                         } else {
                             System.out.print(textColorError);
-                            System.out.print("Error creating game: ");
-                            System.out.println(obj);
+                            System.out.print("Error creating game");
                         }
                     }
                     break;
