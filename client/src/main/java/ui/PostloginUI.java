@@ -39,17 +39,7 @@ public class PostloginUI {
                 }
                 case "create":
                 case "Create": {
-                    if (checkLength(command, 2)) {
-                        String gameName = command[1];
-                        Object obj = ServerFacade.createGame(gameName, this.auth);
-                        if (obj instanceof Game) {
-                            System.out.print(TEXT_COLOR_DEFAULT);
-                            System.out.print("Game successfully created! \n");
-                        } else {
-                            System.out.print(TEXT_COLOR_ERROR);
-                            System.out.print("Error creating game");
-                        }
-                    }
+                    this.create(command);
                     break;
                 }
                 case "logout":
@@ -163,6 +153,20 @@ public class PostloginUI {
         System.out.print("quit");
         System.out.print(TEXT_COLOR_DEFAULT);
         System.out.print(" - close this program \n");
+    }
+
+    private void create(String[] command) {
+        if (checkLength(command, 2)) {
+            String gameName = command[1];
+            Object obj = ServerFacade.createGame(gameName, this.auth);
+            if (obj instanceof Game) {
+                System.out.print(TEXT_COLOR_DEFAULT);
+                System.out.print("Game successfully created! \n");
+            } else {
+                System.out.print(TEXT_COLOR_ERROR);
+                System.out.print("Error creating game");
+            }
+        }
     }
 
     private void join(String[] command) {

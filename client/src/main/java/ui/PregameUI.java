@@ -57,12 +57,13 @@ public class PregameUI {
                 }
                 case "quit":
                 case "Quit": {
-                    this.state = State.stop;
                     System.out.print(TEXT_COLOR_DEFAULT);
                     System.out.print("Exiting program \n");
+                    this.state = State.stop;
                     break;
                 }
-                case null, default: {
+                case null:
+                default: {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Unrecognized command. Type Help for help");
                     break;
