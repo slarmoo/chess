@@ -11,7 +11,7 @@ public class ServerFacadeTests {
 
     private static Server server;
 
-    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
 
     @BeforeAll
     public static void init() {
@@ -166,7 +166,7 @@ public class ServerFacadeTests {
         try {
             serverFacade.grabGameWithID(1, new Auth("", ""));
         } catch (Exception e) {
-            Assertions.assertEquals("Server returned HTTP response code: 401 for URL: http://localhost:8081/game", e.getMessage());
+            Assertions.assertEquals("Server returned HTTP response code: 401 for URL: http://localhost:8080/game", e.getMessage());
         }
     }
 

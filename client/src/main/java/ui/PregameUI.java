@@ -13,7 +13,7 @@ public class PregameUI {
     private State state;
     private Auth auth;
 
-    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
 
     public PregameUI() {
         this.state = State.pregame;

@@ -17,7 +17,7 @@ public class PostloginUI {
     private Game game = null;
     private ChessGame.TeamColor yourColor = ChessGame.TeamColor.WHITE;
 
-    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8081/");
+    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
 
     public PostloginUI(Auth auth) {
         this.state = State.postlogin;
