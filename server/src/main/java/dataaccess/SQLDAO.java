@@ -3,8 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.*;
 import org.mindrot.jbcrypt.BCrypt;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

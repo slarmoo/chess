@@ -3,7 +3,6 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import spark.*;
-import service.*;
 import model.*;
 
 import java.util.Collection;

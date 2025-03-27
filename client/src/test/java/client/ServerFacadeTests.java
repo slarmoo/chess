@@ -1,8 +1,8 @@
 package client;
 
 import chess.ChessGame;
-import model.*;
-import org.eclipse.jetty.io.ssl.ALPNProcessor;
+import model.Auth;
+import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
 
