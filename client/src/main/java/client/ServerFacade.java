@@ -135,7 +135,7 @@ public class ServerFacade {
     }
 
     private static Game[] grabGames(Auth auth) throws Exception {
-        record listGamesResponse(Game[] games) {
+        record ListGamesResponse(Game[] games) {
         }
         URI uri = new URI(urlBase + "game");
 
@@ -147,15 +147,15 @@ public class ServerFacade {
         }
         http.connect();
         InputStream in = http.getInputStream();
-        var response = new Gson().fromJson(new InputStreamReader(in), listGamesResponse.class);
-        if(response instanceof listGamesResponse gamesResponse) {
+        var response = new Gson().fromJson(new InputStreamReader(in), ListGamesResponse.class);
+        if(response instanceof ListGamesResponse gamesResponse) {
             return gamesResponse.games();
         } else {
             return null;
         }
     }
 
-    private static String parseGame(Game game, int fakeID) {
+    public static String parseGame(Game game, int fakeID) {
         var result = new StringBuilder();
         var name = game.gameName();
         var id = fakeID;

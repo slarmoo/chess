@@ -88,7 +88,7 @@ public class ServerFacadeTests {
     @Test
     @Order(7)
     @DisplayName("Successful List Games")
-    public void ListGamesS() {
+    public void listGamesS() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -100,16 +100,16 @@ public class ServerFacadeTests {
         Assertions.assertInstanceOf(Game.class, obj);
         String observed = ServerFacade.getGames(auth);
         Assertions.assertNotNull(observed);
-        String expected =   parseGame(createTestGame(1), 1) + "\n" +
-                            parseGame(createTestGame(2), 2) + "\n" +
-                            parseGame(createTestGame(3), 3) + "\n";
+        String expected =   ServerFacade.parseGame(createTestGame(1), 1) + "\n" +
+                            ServerFacade.parseGame(createTestGame(2), 2) + "\n" +
+                            ServerFacade.parseGame(createTestGame(3), 3) + "\n";
         Assertions.assertEquals(expected, observed);
     }
 
     @Test
     @Order(8)
     @DisplayName("Successful List Games Empty")
-    public void ListGamesE() {
+    public void listGamesE() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -121,7 +121,7 @@ public class ServerFacadeTests {
     @Test
     @Order(9)
     @DisplayName("Unsuccessful List Games")
-    public void ListGamesF() {
+    public void listGamesF() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -133,7 +133,7 @@ public class ServerFacadeTests {
     @Test
     @Order(10)
     @DisplayName("Successful Spectate")
-    public void SpectateS() {
+    public void spectateS() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -150,7 +150,7 @@ public class ServerFacadeTests {
     @Test
     @Order(11)
     @DisplayName("Unsuccessful Spectate")
-    public void SpectateF() {
+    public void spectateF() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -171,7 +171,7 @@ public class ServerFacadeTests {
     @Test
     @Order(12)
     @DisplayName("Successful Join Game")
-    public void JoinGameS() {
+    public void joinGameS() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -186,7 +186,7 @@ public class ServerFacadeTests {
     @Test
     @Order(13)
     @DisplayName("Unsuccessful Join Game")
-    public void JoinGameF() {
+    public void joinGameF() {
         Object obj = ServerFacade.register("a", "a", "a");
         Assertions.assertInstanceOf(Auth.class, obj);
         Auth auth = (Auth) obj;
@@ -224,19 +224,6 @@ public class ServerFacadeTests {
 
     private static Game createTestGame(int id) {
         return new Game(id, null, null, "test" + id, new ChessGame());
-    }
-
-    private static String parseGame(Game game, int fakeID) {
-        var result = new StringBuilder();
-        var name = game.gameName();
-        var id = fakeID;
-        var blackPlayer = game.blackUsername();
-        var whitePlayer = game.whiteUsername();
-        result.append("Game: ").append(name);
-        result.append(" \t| ID: ").append(id);
-        result.append(" \t| White: ").append(whitePlayer == null ? "open" : whitePlayer);
-        result.append(" \t| Black: ").append(blackPlayer == null ? "open" : blackPlayer);
-        return result.toString();
     }
 
 }
