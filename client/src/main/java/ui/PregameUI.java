@@ -5,16 +5,7 @@ import model.Auth;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class PregameUI {
-    private static final String TEXT_COLOR_DEFAULT = EscapeSequences.SET_TEXT_COLOR_GREEN;
-    private static final String TEXT_COLOR_ALT = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-    private static final String TEXT_COLOR_ERROR = EscapeSequences.SET_TEXT_COLOR_RED;
-
-    private State state;
-    private Auth auth;
-
-    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
-
+public class PregameUI extends UI {
     public PregameUI() {
         this.state = State.pregame;
     }
@@ -79,14 +70,6 @@ public class PregameUI {
         }
     }
 
-    public Auth getAuth() {
-        return this.auth;
-    }
-
-    public State getState() {
-        return this.state;
-    }
-
     private void register(String[] command) {
         if(checkLength(command, 4)) {
             String username = command[1];
@@ -120,14 +103,5 @@ public class PregameUI {
                 System.out.println("Error logging in: incorrect credentials");
             }
         }
-    }
-
-    private boolean checkLength(String[] command, int length) {
-        if (command.length < length) {
-            System.out.print(TEXT_COLOR_ERROR);
-            System.out.print("not enough arguments \n");
-            return false;
-        }
-        return true;
     }
 }

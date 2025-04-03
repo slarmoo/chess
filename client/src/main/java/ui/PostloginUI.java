@@ -7,17 +7,9 @@ import model.*;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class PostloginUI {
-    private static final String TEXT_COLOR_DEFAULT = EscapeSequences.SET_TEXT_COLOR_GREEN;
-    private static final String TEXT_COLOR_ALT = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-    private static final String TEXT_COLOR_ERROR = EscapeSequences.SET_TEXT_COLOR_RED;
-
-    private State state;
-    private Auth auth;
+public class PostloginUI extends UI {
     private Game game = null;
     private ChessGame.TeamColor yourColor = ChessGame.TeamColor.WHITE;
-
-    private final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
 
     public PostloginUI(Auth auth) {
         this.state = State.postlogin;
@@ -92,10 +84,6 @@ public class PostloginUI {
         }
     }
 
-    public State getState() {
-        return this.state;
-    }
-
     public Game getGame() {
         return this.game;
     }
@@ -106,15 +94,6 @@ public class PostloginUI {
 
     public ChessGame.TeamColor getColor() {
         return this.yourColor;
-    }
-
-    private boolean checkLength(String[] command, int length) {
-        if (command.length < length) {
-            System.out.print(TEXT_COLOR_ERROR);
-            System.out.print("not enough arguments \n");
-            return false;
-        }
-        return true;
     }
 
     private static void printHelp() {
