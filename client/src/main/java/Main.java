@@ -1,4 +1,5 @@
 import chess.*;
+import model.Game;
 import ui.*;
 
 import java.util.Objects;
@@ -8,7 +9,6 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN);
         System.out.println("♕ 240 Chess Client: " + piece);
-        var game = new ChessGame();
         var pregame = new PregameUI();
         State state = State.pregame;
         pregame.start(state);
@@ -30,10 +30,10 @@ public class Main {
                 case State.game: {
                     boolean isRightSideUp = true;
                     if(postlogin.getGame() != null) {
-                        game = postlogin.getGame().game();
-                        isRightSideUp = Objects.equals(postlogin.getColor(), ChessGame.TeamColor.WHITE);
+                        Game game = postlogin.getGame();
+                        var gameUI = new GameUI(game, postlogin.getColor());
+                        gameUI.start(state);
                     }
-                    ChessBoardUI.printBoard(game.getBoard(), isRightSideUp);
                     state = State.postlogin;
                 }
             }
