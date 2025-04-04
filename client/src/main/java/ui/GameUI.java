@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import model.Auth;
 import model.Game;
 
 import java.util.Objects;
@@ -10,13 +11,15 @@ public class GameUI extends UI {
     private Game game;
     private ChessGame.TeamColor yourColor;
 
-    public GameUI(Game game, ChessGame.TeamColor yourColor) {
+    public GameUI(Auth auth, Game game, ChessGame.TeamColor yourColor) {
         this.game = game;
         this.yourColor = yourColor;
+        this.auth = auth;
     }
 
     public void start(State state) {
         this.state = state;
+        this.renderBoard();
         while (Objects.equals(this.state, State.game)) {
             System.out.print(TEXT_COLOR_DEFAULT);
             System.out.print("Type Help to get started>>> ");
@@ -30,6 +33,14 @@ public class GameUI extends UI {
                     GameUI.printHelp();
                     break;
                 }
+                case "redraw":
+                case "Redraw":
+                    this.renderBoard();
+                    break;
+                case "leave":
+                case "Leave":
+                    this.state = State.postlogin;
+                    break;
                 case null, default: {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Unrecognized command. Type Help for help");

@@ -31,10 +31,13 @@ public class Main {
                     boolean isRightSideUp = true;
                     if(postlogin.getGame() != null) {
                         Game game = postlogin.getGame();
-                        var gameUI = new GameUI(game, postlogin.getColor());
+                        var gameUI = new GameUI(postlogin.getAuth(), postlogin.getGame(), postlogin.getColor());
                         gameUI.start(state);
+                        state = gameUI.getState();
+                        break;
                     }
                     state = State.postlogin;
+                    break;
                 }
             }
         }
