@@ -13,4 +13,6 @@ public interface UserDAO {
     void addAuth(Auth auth) throws DataAccessException;
 
     boolean validateAuth(Auth auth) throws DataAccessException;
+
+    String getUsernameByAuthSQL(Auth auth) throws DataAccessException;
 }

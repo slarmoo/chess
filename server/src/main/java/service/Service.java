@@ -67,4 +67,8 @@ public class Service {
             return false;
         }
     }
+
+    public String getUsernameFromAuth(Auth auth) throws DataAccessException {
+        return userdao.getUsernameByAuthSQL(auth);
+    }
 }

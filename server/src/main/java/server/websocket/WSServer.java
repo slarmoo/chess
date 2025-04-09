@@ -26,34 +26,33 @@ public class WSServer {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        System.out.println("here");
-        if(service.validateAuth(new Auth(command.getUsername(), command.getAuthToken()))) {
+        String username = service.getUsernameFromAuth(new Auth("", command.getAuthToken()));
+        if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
             switch (command.getCommandType()) {
-                case CONNECT -> connect(command, session);
-                case MAKE_MOVE -> makeMove(command);
-                case LEAVE -> leave(command);
-                case RESIGN -> resign(command);
+                case CONNECT -> connect(command, session, username);
+                case MAKE_MOVE -> makeMove(command, username);
+                case LEAVE -> leave(command, username);
+                case RESIGN -> resign(command, username);
             }
         } else {
-            connectionManager.send(command.getUsername(), new ServerErrorMessage("Unable to Validate User"));
+            connectionManager.send(username, new ServerErrorMessage("Unable to Validate User"));
         }
     }
 
-    private void connect(UserGameCommand connectCommand, Session session) throws IOException {
-        System.out.println("here2");
-        connectionManager.add(connectCommand.getUsername(), session);
-        connectionManager.broadcast(connectCommand.getUsername(), new ServerNotificationMessage(connectCommand.getUsername() + " joined the game"));
+    private void connect(UserGameCommand connectCommand, Session session, String username) throws Exception {
+        connectionManager.add(username, session);
+        connectionManager.broadcast(username, new ServerNotificationMessage(username + " joined the game"));
     }
 
-    private void makeMove(UserGameCommand makeMoveCommand) {
-
-    }
-
-    private void leave(UserGameCommand leaveCommand) {
+    private void makeMove(UserGameCommand makeMoveCommand, String username) {
 
     }
 
-    private void resign(UserGameCommand resignCommand) {
+    private void leave(UserGameCommand leaveCommand, String username) {
+
+    }
+
+    private void resign(UserGameCommand resignCommand, String username) {
 
     }
 }
