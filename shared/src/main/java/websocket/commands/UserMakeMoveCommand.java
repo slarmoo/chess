@@ -7,9 +7,7 @@ public class UserMakeMoveCommand extends UserGameCommand {
     public ChessMove move;
 
     public UserMakeMoveCommand(Auth auth, int gameID, ChessMove move) {
-        this.commandType = CommandType.MAKE_MOVE;
-        this.authToken = auth.authToken();
-        this.gameID = gameID;
+        super(CommandType.MAKE_MOVE, auth.authToken(), gameID, auth.username());
         this.move = move;
     }
 }

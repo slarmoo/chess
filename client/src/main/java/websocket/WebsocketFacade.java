@@ -14,16 +14,20 @@ public class WebsocketFacade {
         while (true) ws.send(scanner.nextLine());
     }
 
-    public WebsocketFacade() throws Exception {
-        URI uri = new URI("ws://localhost:8080/ws");
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        this.session = container.connectToServer(this, uri);
+    public WebsocketFacade(int port) {
+        try {
+            URI uri = new URI("ws://localhost:" + port + "/ws");
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            this.session = container.connectToServer(this, uri);
 
-        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-            public void onMessage(String message) {
-                System.out.println(message);
-            }
-        });
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                public void onMessage(String message) {
+                    System.out.println(message);
+                }
+            });
+        } catch (Exception e) {
+            System.out.print("unable to set up websocket");
+        }
     }
 
     public void send(String msg) throws Exception {

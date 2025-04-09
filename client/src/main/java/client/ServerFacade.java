@@ -3,15 +3,19 @@ package client;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
+import websocket.WebsocketFacade;
+import websocket.commands.UserConnectCommand;
 
 import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    private final WebsocketFacade websocket;
 
-    public ServerFacade(String url) {
-        serverUrl = url;
+    public ServerFacade(int port) {
+        serverUrl = "http://localhost:" + port + "/";
+        websocket = new WebsocketFacade(port);
     }
 
     public Object register(String username, String password, String email) {
@@ -70,6 +74,7 @@ public class ServerFacade {
             Game game = grabGameWithID(id, auth);
             writeObjectToPath(new JoinGameRequest(color.name(), game.gameID()),
                     "game", "PUT", Auth.class, auth);
+            websocket.send(new Gson().toJson(new UserConnectCommand(auth, game.gameID())));
             return grabGameWithID(id, auth); //grab updated version
         } catch (Exception e) {
             return e.getMessage();

@@ -11,7 +11,7 @@ public class UI {
     protected State state;
     protected Auth auth;
 
-    protected final ServerFacade serverFacade = new ServerFacade("http://localhost:8080/");
+    protected final ServerFacade serverFacade = new ServerFacade(8080);
 
     public State getState() {
         return this.state;

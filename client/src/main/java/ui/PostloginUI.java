@@ -1,7 +1,6 @@
 package ui;
 
 import chess.ChessGame;
-import client.ServerFacade;
 import model.*;
 
 import java.util.Objects;

@@ -59,4 +59,12 @@ public class Service {
     public void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
         gamedao.joinGame(auth, playerColor, gameID);
     }
+
+    public boolean validateAuth(Auth auth) {
+        try {
+            return userdao.validateAuth(auth);
+        } catch(Exception e) {
+            return false;
+        }
+    }
 }

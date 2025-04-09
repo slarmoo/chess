@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import server.websocket.WSServer;
 import spark.*;
 import model.*;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 
 public class Server {
     private final service.Service service = new service.Service(new MemoryUserDAO(), new MemoryGameDAO());
+    private final WSServer websocket = new WSServer(service);
 
     public Server() {
     }
@@ -20,6 +22,8 @@ public class Server {
 
         Spark.staticFiles.location("/web");
 
+        //websocket
+        Spark.webSocket("/ws", websocket);
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
         Spark.delete("/db", this::deleteAll);
