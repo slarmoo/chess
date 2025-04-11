@@ -193,7 +193,7 @@ public class PostloginUI extends UI {
                 Game game = serverFacade.grabGameWithID(id, this.auth);
                 if (game != null) {
                     System.out.print(TEXT_COLOR_DEFAULT);
-                    System.out.print("joined game \n");
+                    System.out.print("spectating game \n");
                     this.state = State.game;
                     this.game = game;
                     this.yourColor = ChessGame.TeamColor.WHITE;

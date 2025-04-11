@@ -11,13 +11,14 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class GameUI extends UI {
-    private Game game;
-    private ChessGame.TeamColor yourColor;
+    private final Game game;
+    private final ChessGame.TeamColor yourColor;
 
     public GameUI(Auth auth, Game game, ChessGame.TeamColor yourColor) {
         this.game = game;
         this.yourColor = yourColor;
         this.auth = auth;
+        this.serverFacade.websocket.websocketUI.setUp(game, yourColor);
     }
 
     public void start(State state) {

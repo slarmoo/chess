@@ -12,7 +12,7 @@ import java.net.*;
 
 public class ServerFacade {
     private final String serverUrl;
-    private final WebsocketFacade websocket;
+    public final WebsocketFacade websocket;
 
     public ServerFacade(int port) {
         serverUrl = "http://localhost:" + port + "/";
