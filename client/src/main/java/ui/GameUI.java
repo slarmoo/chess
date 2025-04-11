@@ -1,9 +1,12 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.Auth;
 import model.Game;
 
+import java.text.ParseException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -37,8 +40,27 @@ public class GameUI extends UI {
                 case "Redraw":
                     this.renderBoard();
                     break;
+                case "move":
+                case "Move":
+                    if(this.checkLength(command, 3)) {
+                        try {
+                            ChessMove move = parseMove(command[1], command[2]);
+                        } catch (Exception e) {
+                            System.out.print(TEXT_COLOR_ERROR);
+                            System.out.println("Incorrect Syntax. Use letter-number (\"A1\") to denote a position");
+                        }
+                        this.renderBoard();
+                    } else {
+                        System.out.print(TEXT_COLOR_ERROR);
+                        System.out.println("Not enough arguments");
+                    }
+                    break;
+                case "resign":
+                case "Resign":
+                    break;
                 case "leave":
                 case "Leave":
+                    serverFacade.leaveGame(auth, game.gameID());
                     this.state = State.postlogin;
                     break;
                 case null, default: {
@@ -53,6 +75,17 @@ public class GameUI extends UI {
     private void renderBoard() {
         boolean isRightSideUp = Objects.equals(this.yourColor, ChessGame.TeamColor.WHITE);
         ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp);
+    }
+
+    private ChessMove parseMove(String start, String end) throws Exception {
+        return new ChessMove(parsePosition(start), parsePosition(end), null);
+    }
+
+    private ChessPosition parsePosition(String pos) throws Exception {
+        char letter = pos.charAt(0);
+        int number = Integer.parseInt(pos.charAt(1) + "");
+        System.out.print(letter);
+        return new ChessPosition(number, letter);
     }
 
     private static void printHelp() {

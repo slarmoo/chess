@@ -74,6 +74,11 @@ public class PostloginUI extends UI {
                     this.spectate(command);
                     break;
                 }
+                case "delete":
+                    System.out.print(TEXT_COLOR_ERROR);
+                    System.out.println("Deleting Database");
+                    serverFacade.delete();
+                    break;
                 case null, default: {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Unrecognized command. Type Help for help");

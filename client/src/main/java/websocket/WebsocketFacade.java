@@ -1,18 +1,10 @@
 package websocket;
 import javax.websocket.*;
 import java.net.URI;
-import java.util.Scanner;
+import com.google.gson.Gson;
 
-public class WebsocketFacade {
+public class WebsocketFacade extends Endpoint {
     public Session session;
-
-    public static void main(String[] args) throws Exception {
-        var ws = new WebsocketFacade();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Enter a message you want to echo");
-        while (true) ws.send(scanner.nextLine());
-    }
 
     public WebsocketFacade(int port) {
         try {
@@ -26,12 +18,12 @@ public class WebsocketFacade {
                 }
             });
         } catch (Exception e) {
-            System.out.print("unable to set up websocket");
+            System.out.println("unable to set up websocket");
         }
     }
 
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
+    public void send(Object msg) throws Exception {
+        this.session.getBasicRemote().sendText(new Gson().toJson(msg));
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {

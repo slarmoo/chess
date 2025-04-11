@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.*;
 import websocket.WebsocketFacade;
 import websocket.commands.UserConnectCommand;
+import websocket.commands.UserLeaveCommand;
 
 import java.io.*;
 import java.net.*;
@@ -74,10 +75,26 @@ public class ServerFacade {
             Game game = grabGameWithID(id, auth);
             writeObjectToPath(new JoinGameRequest(color.name(), game.gameID()),
                     "game", "PUT", Auth.class, auth);
-            websocket.send(new Gson().toJson(new UserConnectCommand(auth, game.gameID())));
+            websocket.send(new UserConnectCommand(auth, game.gameID()));
             return grabGameWithID(id, auth); //grab updated version
         } catch (Exception e) {
             return e.getMessage();
+        }
+    }
+
+    public void leaveGame(Auth auth, int gameID) {
+        try {
+        websocket.send(new UserLeaveCommand(auth, gameID));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void delete() {
+        try {
+            writeObjectToPath(null, "db", "DELETE", null, null);
+        } catch(Exception e) {
+            System.out.println("unable to delete");
         }
     }
 
