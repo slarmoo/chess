@@ -1,13 +1,17 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import model.Auth;
+import model.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
 import websocket.commands.*;
 import websocket.messages.*;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Objects;
 
 @WebSocket
 public class WSServer {
@@ -26,33 +30,64 @@ public class WSServer {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        String username = service.getUsernameFromAuth(new Auth("", command.getAuthToken()));
+        Auth auth = new Auth("", command.getAuthToken());
+        String username = service.getUsernameFromAuth(auth);
         if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
             switch (command.getCommandType()) {
-                case CONNECT -> connect(command, session, username);
-                case MAKE_MOVE -> makeMove(command, username);
-                case LEAVE -> leave(command, username);
-                case RESIGN -> resign(command, username);
+                case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username);
+                case MAKE_MOVE -> makeMove(new Gson().fromJson(message, UserMakeMoveCommand.class), username, auth);
+                case LEAVE -> leave(new Gson().fromJson(message, UserLeaveCommand.class), username);
+                case RESIGN -> resign(new Gson().fromJson(message, UserResignCommand.class), username);
             }
         } else {
             connectionManager.send(username, new ServerErrorMessage("Unable to Validate User"));
         }
     }
 
-    private void connect(UserGameCommand connectCommand, Session session, String username) throws Exception {
+    private void connect(UserConnectCommand connectCommand, Session session, String username) throws Exception {
         connectionManager.add(username, session);
         connectionManager.broadcast(username, new ServerNotificationMessage(username + " joined the game"));
     }
 
-    private void makeMove(UserGameCommand makeMoveCommand, String username) {
-
+    private void makeMove(UserMakeMoveCommand makeMoveCommand, String username, Auth auth) throws Exception {
+        Collection<Game> games = service.getGames(auth);
+        Game game = null;
+        for(Game g : games) {
+            if(g.gameID() ==  makeMoveCommand.getGameID()) {
+                game = g;
+                break;
+            }
+        }
+        if(game == null) {
+            throw new Exception("Game of ID " + makeMoveCommand.getGameID() + " does not exist");
+        }
+        try {
+            game.game().makeMove(makeMoveCommand.move);
+            String opponentUsername = Objects.equals(username, game.whiteUsername()) ?
+                    game.blackUsername() : game.whiteUsername();
+            ChessGame.TeamColor opponentColor = (Objects.equals(username, game.whiteUsername()) ?
+                    ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE);
+            if(game.game().isInCheckmate(opponentColor)) {
+                connectionManager.broadcast("",
+                        new ServerNotificationMessage(opponentUsername + " is in checkmate\n " + username + " wins!"));
+            } else if(game.game().isInCheck(opponentColor)) {
+                connectionManager.broadcast("", new ServerNotificationMessage(opponentUsername + " is in check"));
+            } else if(game.game().isInStalemate(opponentColor)) {
+                connectionManager.broadcast("",
+                        new ServerNotificationMessage(opponentUsername + " is in stalemate\n" + "It's a draw"));
+            }
+            connectionManager.broadcast(username, new ServerLoadGameMessage(game.game()));
+        } catch(InvalidMoveException e) {
+            connectionManager.send(username, new ServerErrorMessage(e.getMessage()));
+        }
     }
 
-    private void leave(UserGameCommand leaveCommand, String username) {
-
+    private void leave(UserLeaveCommand leaveCommand, String username) throws Exception {
+        connectionManager.remove(username);
+        connectionManager.broadcast(username, new ServerNotificationMessage(username + " left the game"));
     }
 
-    private void resign(UserGameCommand resignCommand, String username) {
-
+    private void resign(UserResignCommand resignCommand, String username) throws Exception {
+        connectionManager.broadcast(username, new ServerNotificationMessage(username + " resigned\n it's a draw"));
     }
 }
