@@ -12,6 +12,7 @@ import java.util.Collection;
 public class ChessGame {
 
     public ChessGame() {
+        this.isGameOver = false;
         this.teamColor = TeamColor.WHITE;
         this.board = new ChessBoard();
         this.board.resetBoard();
@@ -25,6 +26,7 @@ public class ChessGame {
         return false;
     }
 
+    public boolean isGameOver;
     private TeamColor teamColor;
     private ChessBoard board;
 
