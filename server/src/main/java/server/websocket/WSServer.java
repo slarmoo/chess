@@ -41,7 +41,6 @@ public class WSServer {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         Auth auth = new Auth("", command.getAuthToken());
         String username = service.getUsernameFromAuth(auth);
-        System.out.println("here");
         if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
             switch (command.getCommandType()) {
                 case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username, auth);
@@ -50,13 +49,11 @@ public class WSServer {
                 case RESIGN -> resign(new Gson().fromJson(message, UserResignCommand.class), username, auth);
             }
         } else {
-            System.out.println("sending error (bad auth)");
             session.getRemote().sendString(new Gson().toJson(new ServerErrorMessage("Error: Unable to Validate User")));
         }
     }
 
     private void connect(UserConnectCommand connectCommand, Session session, String username, Auth auth) throws Exception {
-        System.out.println(session.toString());
         connectionManager.add(username, session, connectCommand.getGameID());
         Game game = this.getGame(connectCommand.getGameID(), auth);
         if(game == null) {
@@ -131,7 +128,7 @@ public class WSServer {
             connectionManager.broadcast("",
                     new ServerNotificationMessage(username + " resigned\n it's a draw"), resignCommand.getGameID());
         } else {
-            throw new WebsocketException(username, "Error: cannot resign as a spectator. Try leaving instead");
+            throw new WebsocketException("Error: cannot resign as a spectator. Try leaving instead", username);
         }
     }
 
