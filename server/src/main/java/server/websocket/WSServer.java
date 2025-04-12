@@ -45,7 +45,8 @@ public class WSServer {
         if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
             Game game = getGame(command.getGameID(), auth);
             if(game == null) {
-                session.getRemote().sendString(new Gson().toJson(new ServerErrorMessage("Error: Game of ID " + command.getGameID() + " does not exist")));
+                session.getRemote().sendString(new Gson().toJson(
+                        new ServerErrorMessage("Error: Game of ID " + command.getGameID() + " does not exist")));
                 return;
             }
             ChessGame.TeamColor yourColor = (Objects.equals(username, game.whiteUsername()) ?
@@ -86,7 +87,8 @@ public class WSServer {
                 if(game.game().isInCheckmate(opponentColor)) {
                     game.game().isGameOver = true;
                     connectionManager.broadcast("",
-                            new ServerNotificationMessage(opponentUsername + " is in checkmate\n " + username + " wins!"), makeMoveCommand.getGameID());
+                            new ServerNotificationMessage(opponentUsername + " is in checkmate\n " + username + " wins!"),
+                            makeMoveCommand.getGameID());
                 } else if(game.game().isInCheck(opponentColor)) {
                     connectionManager.broadcast("", new ServerNotificationMessage(opponentUsername + " is in check"), makeMoveCommand.getGameID());
                 } else if(game.game().isInStalemate(opponentColor)) {
@@ -95,8 +97,10 @@ public class WSServer {
                             new ServerNotificationMessage(opponentUsername + " is in stalemate\n" + "It's a draw"), makeMoveCommand.getGameID());
                 }
                 service.updateGame(game, makeMoveCommand.getGameID());
-                connectionManager.broadcast("", new ServerLoadGameMessage(game.game()), makeMoveCommand.getGameID());
-                connectionManager.broadcast(username, new ServerNotificationMessage(username + " made move " + makeMoveCommand.move), makeMoveCommand.getGameID());
+                connectionManager.broadcast("", new ServerLoadGameMessage(game.game()),
+                        makeMoveCommand.getGameID());
+                connectionManager.broadcast(username, new ServerNotificationMessage(username + " made move " +
+                        makeMoveCommand.move), makeMoveCommand.getGameID());
             } catch(InvalidMoveException e) {
                 connectionManager.send(username, new ServerErrorMessage(e.getMessage()));
             }
