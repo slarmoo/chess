@@ -3,28 +3,30 @@ package ui;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import client.ServerFacade;
 import model.Auth;
 import model.Game;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class GameUI extends UI {
-    private final Game game;
+    private Game game;
     private final ChessGame.TeamColor yourColor;
 
-    public GameUI(Auth auth, Game game, ChessGame.TeamColor yourColor) {
+    public GameUI(Auth auth, Game game, ChessGame.TeamColor yourColor, ServerFacade server) {
+        super(server);
         this.game = game;
         this.yourColor = yourColor;
         this.auth = auth;
-        this.serverFacade.websocket.websocketUI.setUp(game, yourColor);
     }
 
     public void start(State state) {
         this.state = state;
-        this.renderBoard();
         while (Objects.equals(this.state, State.game)) {
+            this.serverFacade.websocket.websocketUI.setUp(game, yourColor);
             System.out.print(TEXT_COLOR_DEFAULT);
             System.out.print("Type Help to get started>>> ");
             Scanner scanner = new Scanner(System.in);
@@ -47,7 +49,6 @@ public class GameUI extends UI {
                         try {
                             ChessMove move = parseMove(command[1], command[2]);
                             serverFacade.makeMove(this.auth, game.gameID(), move);
-                            this.renderBoard();
                         } catch (Exception e) {
                             System.out.print(TEXT_COLOR_ERROR);
                             System.out.println("Incorrect Syntax. Use letter-number (\"A1\") to denote a position");
@@ -66,6 +67,21 @@ public class GameUI extends UI {
                     serverFacade.leaveGame(auth, game.gameID());
                     this.state = State.postlogin;
                     break;
+                case "highlight":
+                case "Highlight":
+                    if(this.checkLength(command, 2)) {
+                        try {
+                            ChessPosition pos = parsePosition(command[1]);
+                            this.highlightBoard(pos);
+                        } catch (Exception e) {
+                            System.out.print(TEXT_COLOR_ERROR);
+                            System.out.println("Incorrect Syntax. Use letter-number (\"A1\") to denote a position");
+                        }
+                    } else {
+                        System.out.print(TEXT_COLOR_ERROR);
+                        System.out.println("Not enough arguments");
+                    }
+                    break;
                 case null, default: {
                     System.out.print(TEXT_COLOR_ERROR);
                     System.out.println("Unrecognized command. Type Help for help");
@@ -76,8 +92,19 @@ public class GameUI extends UI {
     }
 
     private void renderBoard() {
+        this.game = serverFacade.websocket.websocketUI.getGame();
         boolean isRightSideUp = Objects.equals(this.yourColor, ChessGame.TeamColor.WHITE);
-        ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp);
+        ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp, null, new ArrayList<ChessMove>());
+    }
+
+    private void highlightBoard(ChessPosition pos) {
+        this.game = serverFacade.websocket.websocketUI.getGame();
+        boolean isRightSideUp = Objects.equals(this.yourColor, ChessGame.TeamColor.WHITE);
+        if(this.game.game().getBoard().getPiece(pos) != null) {
+            ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp, pos, this.game.game().validMoves(pos));
+        } else {
+            ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp, pos, new ArrayList<ChessMove>());
+        }
     }
 
     private ChessMove parseMove(String start, String end) throws Exception {

@@ -6,7 +6,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class PregameUI extends UI {
-    public PregameUI() {
+    public PregameUI(ServerFacade server) {
+        super(server);
         this.state = State.pregame;
     }
 

@@ -99,10 +99,11 @@ public class WSServer {
                 service.updateGame(game, makeMoveCommand.getGameID());
                 connectionManager.broadcast("", new ServerLoadGameMessage(game.game()),
                         makeMoveCommand.getGameID());
-                connectionManager.broadcast(username, new ServerNotificationMessage(username + " made move " +
-                        makeMoveCommand.move), makeMoveCommand.getGameID());
+                connectionManager.broadcast(username, new ServerNotificationMessage(username + " moved their piece " +
+                        parseMove(makeMoveCommand.move)), makeMoveCommand.getGameID());
             } catch(InvalidMoveException e) {
-                connectionManager.send(username, new ServerErrorMessage(e.getMessage()));
+                System.out.println("invalid move exception");
+                connectionManager.send(username, new ServerErrorMessage("Error: " + e.getMessage()));
             }
         } else {
             throw new WebsocketException("Error: Invalid Move", username);
@@ -152,5 +153,15 @@ public class WSServer {
             }
         }
         return null;
+    }
+
+    private static final String[] letters = {"a", "b", "c", "d", "e", "f", "g", "h"};
+
+    private String parseMove(ChessMove move) {
+        String start = letters[move.getStartPosition().getColumn()-1] + move.getStartPosition().getRow();
+        String end = letters[move.getEndPosition().getColumn()-1] + move.getEndPosition().getRow();
+        String promotion = move.getPromotionPiece() != null ?
+                " promoting their pawn to a " + move.getPromotionPiece(): "";
+        return "from " + start + " to " + end + promotion;
     }
 }

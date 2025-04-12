@@ -30,14 +30,17 @@ public class WebsocketFacade extends Endpoint {
                         case NOTIFICATION: {
                             var notif = new Gson().fromJson(message, ServerNotificationMessage.class);
                             websocketUI.notify(notif);
+                            break;
                         }
                         case ERROR: {
                             var error = new Gson().fromJson(message, ServerErrorMessage.class);
                             websocketUI.error(error);
+                            break;
                         }
                         case LOAD_GAME: {
                             var gameMessage = new Gson().fromJson(message, ServerLoadGameMessage.class);
                             websocketUI.loadGame(gameMessage);
+                            break;
                         }
                     }
                 }

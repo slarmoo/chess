@@ -2,16 +2,21 @@ package ui;
 
 import chess.*;
 
+import java.util.Collection;
+
 public class ChessBoardUI {
     private static final String BLACK_BG_COLOR = EscapeSequences.SET_BG_COLOR_DARK_GREEN;
     private static final String WHITE_BG_COLOR = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+    private static final String HIGHLIGHT_BG_COLOR = EscapeSequences.SET_BG_COLOR_YELLOW;
+    private static final String HIGHLIGHT_BG_COLOR_BLACK = EscapeSequences.SET_BG_COLOR_GREEN;
+    private static final String HIGHLIGHT_BG_COLOR_WHITE = EscapeSequences.SET_BG_COLOR_WHITE;
     private static final String BLACK_PIECE_COLOR = EscapeSequences.SET_TEXT_COLOR_BLACK;
     private static final String WHITE_PIECE_COLOR = EscapeSequences.SET_TEXT_COLOR_WHITE;
     private static final String EDGE_BG_COLOR = EscapeSequences.SET_BG_COLOR_DARK_GREY;
     private static final String EDGE_TEXT_COLOR = EscapeSequences.SET_TEXT_COLOR_WHITE;
     private static final String[] EDGE_LETTERS = {"h", "g", "f", "e", "d", "c", "b", "a"};
 
-    public static void printBoard(ChessBoard board, boolean isRightSideUp) {
+    public static void printBoard(ChessBoard board, boolean isRightSideUp, ChessPosition pos, Collection<ChessMove> chessMoves) {
         printULBorder(isRightSideUp);
         if(isRightSideUp) {
             for(int i = 8; i >= 1; i--) {
@@ -19,7 +24,7 @@ public class ChessBoardUI {
                 System.out.print(EDGE_TEXT_COLOR);
                 System.out.print(getPrettyCharacter(i + ""));
                 for(int j = 1; j <= 8; j++) {
-                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
+                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)), pos, chessMoves);
                 }
                 System.out.print(EDGE_BG_COLOR);
                 System.out.print(EDGE_TEXT_COLOR);
@@ -33,7 +38,7 @@ public class ChessBoardUI {
                 System.out.print(EDGE_TEXT_COLOR);
                 System.out.print(getPrettyCharacter(i + ""));
                 for(int j = 8; j >= 1; j--) {
-                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)));
+                    printPiece(i, j, board.getPiece(new ChessPosition(i, j)), pos, chessMoves);
                 }
                 System.out.print(EDGE_BG_COLOR);
                 System.out.print(EDGE_TEXT_COLOR);
@@ -45,13 +50,29 @@ public class ChessBoardUI {
         printULBorder(isRightSideUp);
     }
 
-    private static void printPiece(int i, int j, ChessPiece piece) {
+    private static void printPiece(int i, int j, ChessPiece piece, ChessPosition pos, Collection<ChessMove> chessMoves) {
         if(piece != null && piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             System.out.print(BLACK_PIECE_COLOR);
         } else {
             System.out.print(WHITE_PIECE_COLOR);
         }
-        if((i+j)%2==0) {
+        boolean posInMoves = false;
+        ChessPosition currentPosition = new ChessPosition(i, j);
+        for (ChessMove move : chessMoves) {
+            if (move.getEndPosition().equals(currentPosition)) {
+                posInMoves = true;
+                break;
+            }
+        }
+        if(pos != null && pos.getRow() == i && pos.getColumn() == j) {
+            System.out.print(HIGHLIGHT_BG_COLOR);
+        } else if(posInMoves) {
+            if((i+j)%2==0) {
+                System.out.print(HIGHLIGHT_BG_COLOR_BLACK);
+            } else {
+                System.out.print(HIGHLIGHT_BG_COLOR_WHITE);
+            }
+        }else if((i+j)%2==0) {
             System.out.print(BLACK_BG_COLOR);
         } else {
             System.out.print(WHITE_BG_COLOR);

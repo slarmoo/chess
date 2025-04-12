@@ -1,12 +1,13 @@
 package ui;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
+import chess.ChessMove;
 import model.Game;
 import websocket.messages.ServerErrorMessage;
 import websocket.messages.ServerLoadGameMessage;
 import websocket.messages.ServerNotificationMessage;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class WebsocketUI {
@@ -28,7 +29,7 @@ public class WebsocketUI {
 
     public void notify(ServerNotificationMessage notification) {
         System.out.print(TEXT_COLOR_WEBSOCKET);
-        System.out.println("\n Websocket: " + notification.message);
+        System.out.println("\nWebsocket: " + notification.message);
         System.out.print(TEXT_COLOR_DEFAULT);
     }
 
@@ -40,11 +41,12 @@ public class WebsocketUI {
 
     public void loadGame(ServerLoadGameMessage loadGame) {
         this.updateGame(loadGame.game);
-        this.renderBoard();
+        boolean isRightSideUp = Objects.equals(this.yourColor, ChessGame.TeamColor.WHITE);
+        System.out.print("\n");
+        ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp, null, new ArrayList<ChessMove>());
     }
 
-    private void renderBoard() {
-        boolean isRightSideUp = Objects.equals(this.yourColor, ChessGame.TeamColor.WHITE);
-        ChessBoardUI.printBoard(game.game().getBoard(), isRightSideUp);
+    public Game getGame() {
+        return this.game;
     }
 }

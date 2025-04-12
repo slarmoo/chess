@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import client.ServerFacade;
 import model.*;
 
 import java.util.Objects;
@@ -10,7 +11,8 @@ public class PostloginUI extends UI {
     private Game game = null;
     private ChessGame.TeamColor yourColor = ChessGame.TeamColor.WHITE;
 
-    public PostloginUI(Auth auth) {
+    public PostloginUI(Auth auth, ServerFacade server) {
+        super(server);
         this.state = State.postlogin;
         this.auth = auth;
     }

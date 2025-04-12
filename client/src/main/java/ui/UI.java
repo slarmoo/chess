@@ -11,7 +11,11 @@ public class UI {
     protected State state;
     protected Auth auth;
 
-    protected final ServerFacade serverFacade = new ServerFacade(8080);
+    protected final ServerFacade serverFacade;
+
+    public UI(ServerFacade server) {
+        this.serverFacade = server;
+    }
 
     public State getState() {
         return this.state;
