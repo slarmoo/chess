@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
-    public void add(String username, Session session) {
+    public void add(String username, Session session, int gameID) {
         System.out.println("adding connection");
-        var connection = new Connection(username, session);
+        var connection = new Connection(username, session, gameID);
         connections.put(username, connection);
     }
 
@@ -22,12 +22,11 @@ public class ConnectionManager {
         connections.remove(username);
     }
 
-    public void broadcast(String excludeUsername, ServerMessage message) throws IOException {
+    public void broadcast(String excludeUsername, ServerMessage message, int toGameID) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
-            System.out.println("sending messages: " + c.username + " " + excludeUsername);
             if (c.session.isOpen()) {
-                if (!c.username.equals(excludeUsername)) {
+                if (!c.username.equals(excludeUsername) && c.gameID == toGameID) {
                     c.send(new Gson().toJson(message));
                 }
             } else {
