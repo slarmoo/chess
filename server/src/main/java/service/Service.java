@@ -60,6 +60,10 @@ public class Service {
         gamedao.joinGame(auth, playerColor, gameID);
     }
 
+    public void updateGame(ChessGame.TeamColor playerColor, ChessGame game, int gameID) {
+        gamedao.updateGame(playerColor, game, gameID);
+    }
+
     public boolean validateAuth(Auth auth) {
         try {
             return userdao.validateAuth(auth);

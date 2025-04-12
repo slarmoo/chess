@@ -13,4 +13,6 @@ public interface GameDAO {
     Collection<Game> findAll() throws DataAccessException;
 
     void joinGame(Auth auth, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException;
+
+    void updateGame(ChessGame.TeamColor playerColor, ChessGame game, int gameID);
 }

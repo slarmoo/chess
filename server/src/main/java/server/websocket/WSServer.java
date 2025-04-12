@@ -32,37 +32,41 @@ public class WSServer {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         Auth auth = new Auth("", command.getAuthToken());
         String username = service.getUsernameFromAuth(auth);
+        System.out.println("here");
         if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
             switch (command.getCommandType()) {
-                case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username);
+                case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username, auth);
                 case MAKE_MOVE -> makeMove(new Gson().fromJson(message, UserMakeMoveCommand.class), username, auth);
                 case LEAVE -> leave(new Gson().fromJson(message, UserLeaveCommand.class), username);
                 case RESIGN -> resign(new Gson().fromJson(message, UserResignCommand.class), username);
             }
         } else {
+            System.out.println("sending error (bad auth)");
             connectionManager.send(username, new ServerErrorMessage("Unable to Validate User"));
         }
     }
 
-    private void connect(UserConnectCommand connectCommand, Session session, String username) throws Exception {
+    private void connect(UserConnectCommand connectCommand, Session session, String username, Auth auth) throws Exception {
+        System.out.println(session.toString());
         connectionManager.add(username, session);
+        Game game = this.getGame(connectCommand.getGameID(), auth);
+        if(game == null) {
+            throw new Exception("Game of ID " + connectCommand.getGameID() + " does not exist");
+        }
+        connectionManager.send(username, new ServerLoadGameMessage(game.game()));
         connectionManager.broadcast(username, new ServerNotificationMessage(username + " joined the game"));
     }
 
     private void makeMove(UserMakeMoveCommand makeMoveCommand, String username, Auth auth) throws Exception {
-        Collection<Game> games = service.getGames(auth);
-        Game game = null;
-        for(Game g : games) {
-            if(g.gameID() ==  makeMoveCommand.getGameID()) {
-                game = g;
-                break;
-            }
-        }
+        Game game = this.getGame(makeMoveCommand.getGameID(), auth);
         if(game == null) {
             throw new Exception("Game of ID " + makeMoveCommand.getGameID() + " does not exist");
         }
         try {
             game.game().makeMove(makeMoveCommand.move);
+            ChessGame.TeamColor yourColor = (Objects.equals(username, game.whiteUsername()) ?
+                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK);
+            service.updateGame(yourColor, game.game(), makeMoveCommand.getGameID());
             String opponentUsername = Objects.equals(username, game.whiteUsername()) ?
                     game.blackUsername() : game.whiteUsername();
             ChessGame.TeamColor opponentColor = (Objects.equals(username, game.whiteUsername()) ?
@@ -89,5 +93,15 @@ public class WSServer {
 
     private void resign(UserResignCommand resignCommand, String username) throws Exception {
         connectionManager.broadcast(username, new ServerNotificationMessage(username + " resigned\n it's a draw"));
+    }
+
+    private Game getGame(int id, Auth auth) throws Exception {
+        Collection<Game> games = service.getGames(auth);
+        for(Game g : games) {
+            if(g.gameID() ==  id) {
+                return g;
+            }
+        }
+        return null;
     }
 }

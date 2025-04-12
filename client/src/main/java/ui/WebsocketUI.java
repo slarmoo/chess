@@ -22,6 +22,10 @@ public class WebsocketUI {
         this.yourColor = color;
     }
 
+    private void updateGame(ChessGame chessGame) {
+        this.game = new Game(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
+    }
+
     public void notify(ServerNotificationMessage notification) {
         System.out.print(TEXT_COLOR_WEBSOCKET);
         System.out.println("\n Websocket: " + notification.message);
@@ -35,6 +39,7 @@ public class WebsocketUI {
     }
 
     public void loadGame(ServerLoadGameMessage loadGame) {
+        this.updateGame(loadGame.game);
         this.renderBoard();
     }
 
