@@ -1,11 +1,11 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.*;
 import websocket.WebsocketFacade;
-import websocket.commands.UserConnectCommand;
-import websocket.commands.UserLeaveCommand;
+import websocket.commands.*;
 
 import java.io.*;
 import java.net.*;
@@ -82,9 +82,33 @@ public class ServerFacade {
         }
     }
 
+    public void spectateGame(Auth auth, int gameID) {
+        try {
+            websocket.send(new UserConnectCommand(auth, gameID));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void makeMove(Auth auth, int gameID, ChessMove move) {
+        try {
+            websocket.send(new UserMakeMoveCommand(auth, gameID, move));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void leaveGame(Auth auth, int gameID) {
         try {
-        websocket.send(new UserLeaveCommand(auth, gameID));
+            websocket.send(new UserLeaveCommand(auth, gameID));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void resignGame(Auth auth, int gameID) {
+        try {
+            websocket.send(new UserResignCommand(auth, gameID));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

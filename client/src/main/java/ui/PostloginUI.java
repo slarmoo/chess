@@ -191,6 +191,7 @@ public class PostloginUI extends UI {
             }
             try {
                 Game game = serverFacade.grabGameWithID(id, this.auth);
+                serverFacade.spectateGame(this.auth, id);
                 if (game != null) {
                     System.out.print(TEXT_COLOR_DEFAULT);
                     System.out.print("spectating game \n");

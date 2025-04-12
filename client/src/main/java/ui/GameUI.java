@@ -46,11 +46,12 @@ public class GameUI extends UI {
                     if(this.checkLength(command, 3)) {
                         try {
                             ChessMove move = parseMove(command[1], command[2]);
+                            serverFacade.makeMove(this.auth, game.gameID(), move);
+                            this.renderBoard();
                         } catch (Exception e) {
                             System.out.print(TEXT_COLOR_ERROR);
                             System.out.println("Incorrect Syntax. Use letter-number (\"A1\") to denote a position");
                         }
-                        this.renderBoard();
                     } else {
                         System.out.print(TEXT_COLOR_ERROR);
                         System.out.println("Not enough arguments");
@@ -58,6 +59,7 @@ public class GameUI extends UI {
                     break;
                 case "resign":
                 case "Resign":
+                    serverFacade.resignGame(auth, game.gameID());
                     break;
                 case "leave":
                 case "Leave":
@@ -85,8 +87,18 @@ public class GameUI extends UI {
     private ChessPosition parsePosition(String pos) throws Exception {
         char letter = pos.charAt(0);
         int number = Integer.parseInt(pos.charAt(1) + "");
-        System.out.print(letter);
-        return new ChessPosition(number, letter);
+        int number2 = switch (letter) {
+            case 'a'-> 1;
+            case 'b'-> 2;
+            case 'c'-> 3;
+            case 'd'-> 4;
+            case 'e'-> 5;
+            case 'f'-> 6;
+            case 'g'-> 7;
+            case 'h'-> 8;
+            default -> throw new ParseException(pos, 0);
+        };
+        return new ChessPosition(number, number2);
     }
 
     private static void printHelp() {
