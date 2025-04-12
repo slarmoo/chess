@@ -60,7 +60,7 @@ public class Service {
         gamedao.joinGame(auth, playerColor, gameID);
     }
 
-    public void updateGame(ChessGame game, int gameID) {
+    public void updateGame(Game game, int gameID) {
         gamedao.updateGame(game, gameID);
     }
 

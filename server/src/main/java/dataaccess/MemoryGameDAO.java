@@ -51,10 +51,9 @@ public class MemoryGameDAO extends SQLDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(ChessGame chessGame, int gameID) {
+    public void updateGame(Game game, int gameID) {
         try {
-            Game game = this.getGameByIDSQL(gameID);
-            this.updateGameSQL(game.gameID(), game.gameName(), game.whiteUsername(), game.blackUsername(), chessGame);
+            this.updateGameSQL(game.gameID(), game.gameName(), game.whiteUsername(), game.blackUsername(), game.game());
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }

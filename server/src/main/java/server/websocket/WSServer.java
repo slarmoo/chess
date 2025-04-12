@@ -41,39 +41,39 @@ public class WSServer {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         Auth auth = new Auth("", command.getAuthToken());
         String username = service.getUsernameFromAuth(auth);
+
         if(service.validateAuth(new Auth(username, command.getAuthToken()))) {
+            Game game = getGame(command.getGameID(), auth);
+            if(game == null) {
+                session.getRemote().sendString(new Gson().toJson(new ServerErrorMessage("Error: Game of ID " + command.getGameID() + " does not exist")));
+                return;
+            }
+            ChessGame.TeamColor yourColor = (Objects.equals(username, game.whiteUsername()) ?
+                    ChessGame.TeamColor.WHITE : Objects.equals(username, game.blackUsername()) ?
+                    ChessGame.TeamColor.BLACK : null);
+
             switch (command.getCommandType()) {
-                case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username, auth);
-                case MAKE_MOVE -> makeMove(new Gson().fromJson(message, UserMakeMoveCommand.class), username, auth);
-                case LEAVE -> leave(new Gson().fromJson(message, UserLeaveCommand.class), username);
-                case RESIGN -> resign(new Gson().fromJson(message, UserResignCommand.class), username, auth);
+                case CONNECT -> connect(new Gson().fromJson(message, UserConnectCommand.class), session, username, game);
+                case MAKE_MOVE -> makeMove(new Gson().fromJson(message, UserMakeMoveCommand.class), username, game, yourColor);
+                case LEAVE -> leave(new Gson().fromJson(message, UserLeaveCommand.class), username, game, yourColor);
+                case RESIGN -> resign(new Gson().fromJson(message, UserResignCommand.class), username, game, yourColor);
             }
         } else {
             session.getRemote().sendString(new Gson().toJson(new ServerErrorMessage("Error: Unable to Validate User")));
         }
     }
 
-    private void connect(UserConnectCommand connectCommand, Session session, String username, Auth auth) throws Exception {
+    private void connect(UserConnectCommand connectCommand, Session session, String username, Game game) throws Exception {
         connectionManager.add(username, session, connectCommand.getGameID());
-        Game game = this.getGame(connectCommand.getGameID(), auth);
-        if(game == null) {
-            throw new WebsocketException("Error: Game of ID " + connectCommand.getGameID() + " does not exist", username);
-        }
         connectionManager.send(username, new ServerLoadGameMessage(game.game()));
         connectionManager.broadcast(username, new ServerNotificationMessage(username + " joined the game"), connectCommand.getGameID());
     }
 
-    private void makeMove(UserMakeMoveCommand makeMoveCommand, String username, Auth auth) throws Exception {
-        Game game = this.getGame(makeMoveCommand.getGameID(), auth);
-        if(game == null) {
-            throw new WebsocketException("Error: Game of ID " + makeMoveCommand.getGameID() + " does not exist", username);
-        }
+    private void makeMove(UserMakeMoveCommand makeMoveCommand, String username, Game game, ChessGame.TeamColor yourColor) throws Exception {
         if(game.game().isGameOver) {
             throw new WebsocketException("Error: Game of ID " + makeMoveCommand.getGameID() + " is over", username);
         }
-        ChessGame.TeamColor yourColor = (Objects.equals(username, game.whiteUsername()) ?
-                ChessGame.TeamColor.WHITE : Objects.equals(username, game.blackUsername()) ?
-                ChessGame.TeamColor.BLACK : null);
+
         if(makeMoveCommand.move != null && game.game().getTeamTurn().equals(yourColor) &&
         game.game().validMoves(makeMoveCommand.move.getStartPosition()).contains(makeMoveCommand.move) &&
         game.game().getBoard().getPiece(makeMoveCommand.move.getStartPosition()).getTeamColor() == yourColor) {
@@ -94,7 +94,7 @@ public class WSServer {
                     connectionManager.broadcast("",
                             new ServerNotificationMessage(opponentUsername + " is in stalemate\n" + "It's a draw"), makeMoveCommand.getGameID());
                 }
-                service.updateGame(game.game(), makeMoveCommand.getGameID());
+                service.updateGame(game, makeMoveCommand.getGameID());
                 connectionManager.broadcast("", new ServerLoadGameMessage(game.game()), makeMoveCommand.getGameID());
                 connectionManager.broadcast(username, new ServerNotificationMessage(username + " made move " + makeMoveCommand.move), makeMoveCommand.getGameID());
             } catch(InvalidMoveException e) {
@@ -106,25 +106,33 @@ public class WSServer {
 
     }
 
-    private void leave(UserLeaveCommand leaveCommand, String username) throws Exception {
+    private void leave(UserLeaveCommand leaveCommand, String username, Game game, ChessGame.TeamColor yourColor) throws Exception {
+        if(game.game().isGameOver) {
+            throw new WebsocketException("Error: Game of ID " + leaveCommand.getGameID() + " is over", username);
+        }
+
+        Game newGame = game;
+        if(yourColor != null) {
+            if (yourColor.equals(ChessGame.TeamColor.WHITE)) {
+                newGame = new Game(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+            } else if (yourColor.equals(ChessGame.TeamColor.BLACK)) {
+                newGame = new Game(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+            }
+        }
+
+        service.updateGame(newGame, leaveCommand.getGameID());
         connectionManager.remove(username);
         connectionManager.broadcast(username, new ServerNotificationMessage(username + " left the game"), leaveCommand.getGameID());
     }
 
-    private void resign(UserResignCommand resignCommand, String username, Auth auth) throws Exception {
-        Game game = getGame(resignCommand.getGameID(), auth);
-        if(game == null) {
-            throw new WebsocketException("Error: Game of ID " + resignCommand.getGameID() + " does not exist", username);
-        }
+    private void resign(UserResignCommand resignCommand, String username, Game game, ChessGame.TeamColor yourColor) throws Exception {
         if(game.game().isGameOver) {
-            throw new WebsocketException("Error: Game of ID " + resignCommand.getGameID() + " is over", username);
+            throw new WebsocketException("Error: Game of ID " + resignCommand.getGameID() + " is over ", username);
         }
-        ChessGame.TeamColor yourColor = (Objects.equals(username, game.whiteUsername()) ?
-                ChessGame.TeamColor.WHITE : Objects.equals(username, game.blackUsername()) ?
-                ChessGame.TeamColor.BLACK : null);
+
         if(yourColor != null) {
             game.game().isGameOver = true;
-            service.updateGame(game.game(), resignCommand.getGameID());
+            service.updateGame(game, resignCommand.getGameID());
             connectionManager.broadcast("",
                     new ServerNotificationMessage(username + " resigned\n it's a draw"), resignCommand.getGameID());
         } else {
